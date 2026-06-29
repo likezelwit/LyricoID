@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -37,23 +38,53 @@
         .form-label { display: block; font-size: 13px; color: #606060; margin-bottom: 4px; font-weight: 500; }
         .btn-primary { background: #065fd4; color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s; font-family: 'Roboto', sans-serif; }
         .btn-primary:hover { background: #0550b5; }
-        .btn-primary:disabled { background: #90b8e8; cursor: not-allowed; }
         .btn-secondary { background: #f2f2f2; color: #0f0f0f; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s; font-family: 'Roboto', sans-serif; }
         .btn-secondary:hover { background: #e5e5e5; }
         .btn-danger { background: transparent; color: #f44336; padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid #f44336; cursor: pointer; transition: all 0.15s; font-family: 'Roboto', sans-serif; }
         .btn-danger:hover { background: #f44336; color: #fff; }
         .btn-edit { background: transparent; color: #065fd4; padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid #065fd4; cursor: pointer; transition: all 0.15s; font-family: 'Roboto', sans-serif; }
         .btn-edit:hover { background: #065fd4; color: #fff; }
+        .btn-publish { background: transparent; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid #2e7d32; cursor: pointer; transition: all 0.15s; font-family: 'Roboto', sans-serif; }
+        .btn-publish:hover { background: #2e7d32; color: #fff; }
         .table-row { transition: background 0.15s; }
         .table-row:hover { background: #f9f9f9; }
         .delete-confirm { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; }
         .delete-confirm.open { display: flex; }
-        .stat-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px 20px; }
-        .submit-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .publish-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 110; display: none; align-items: center; justify-content: center; }
+        .publish-modal.open { display: flex; }
+        .login-screen { position: fixed; inset: 0; background: #f9f9f9; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: #fff; border-radius: 16px; padding: 40px; max-width: 400px; width: 90%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
     </style>
 </head>
 <body class="font-roboto">
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="flex items-center gap-3 mb-6">
+                <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <h1 class="text-lg font-medium text-yt-text">Staff Login</h1>
+                    <p class="text-xs text-yt-text-light">Lyric.o Dashboard</p>
+                </div>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="email@gmail.com" required>
+                </div>
+                <div class="mb-6">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                </div>
+                <div id="loginError" class="hidden text-red-500 text-sm mb-4"></div>
+                <button type="submit" id="loginBtn" class="btn-primary w-full flex items-center justify-center gap-2">
+                    <span id="loginBtnText">Masuk</span>
+                    <div id="loginSpinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div id="toast" class="toast"></div>
 
@@ -72,6 +103,25 @@
         </div>
     </div>
 
+    <!-- Publish Modal (Coming Soon -> Publish) -->
+    <div id="publishModal" class="publish-modal" onclick="if(event.target===this)closePublishModal()">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="upload" class="w-7 h-7 text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-medium text-yt-text mb-2 text-center">Publish Lagu</h3>
+            <p class="text-sm text-yt-text-secondary mb-5 text-center">Masukkan link YouTube untuk mempublikasikan lagu ini.</p>
+            <div class="mb-5">
+                <label class="form-label">Link YouTube *</label>
+                <input type="url" id="publishYoutubeLink" class="form-input" placeholder="https://youtube.com/watch?v=..." required>
+            </div>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closePublishModal()" class="btn-secondary">Batal</button>
+                <button onclick="confirmPublish()" class="btn-primary" style="background:#2e7d32" onmouseover="this.style.background='#1b5e20'" onmouseout="this.style.background='#2e7d32'">Publish</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-white border-b border-yt-border h-14 flex items-center px-6 sticky top-0 z-50">
         <a href="../index.html" class="flex items-center gap-2 text-yt-text no-underline hover:opacity-80 transition-opacity">
@@ -82,51 +132,97 @@
         <div class="flex items-center gap-2">
             <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-8 h-8 rounded-full object-cover">
             <span class="text-sm font-medium text-yt-text">Staff Panel</span>
+            <button onclick="handleLogout()" class="ml-3 text-xs text-yt-text-secondary hover:text-red-500 transition-colors flex items-center gap-1" title="Logout">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Logout</span>
+            </button>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        <!-- Stats -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <div class="stat-card">
-                <p class="text-xs text-yt-text-light font-medium">Total Lagu</p>
-                <p id="statTotal" class="text-2xl font-normal text-yt-text mt-1">0</p>
-            </div>
-            <div class="stat-card">
-                <p class="text-xs text-yt-text-light font-medium">Dengan Lirik</p>
-                <p id="statLyrics" class="text-2xl font-normal text-yt-text mt-1">0</p>
-            </div>
-            <div class="stat-card">
-                <p class="text-xs text-yt-text-light font-medium">Dengan Video</p>
-                <p id="statVideo" class="text-2xl font-normal text-yt-text mt-1">0</p>
-            </div>
-            <div class="stat-card">
-                <p class="text-xs text-yt-text-light font-medium">Terbaru</p>
-                <p id="statLatest" class="text-sm font-normal text-yt-text mt-1 truncate">-</p>
-            </div>
-        </div>
-
-        <!-- Toggle Form Button -->
-        <div class="flex items-center justify-between mb-6">
+        <!-- Toggle Buttons -->
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
             <h1 class="text-2xl font-normal text-yt-text">Kelola Lagu</h1>
-            <button id="toggleFormBtn" onclick="toggleForm()" class="btn-primary flex items-center gap-2">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span id="toggleFormText">Tambah Lagu</span>
-            </button>
+            <div class="flex gap-2">
+                <button id="toggleCSBtn" onclick="toggleCSForm()" class="btn-secondary flex items-center gap-2" style="border:1px solid #e5e5e5;">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    <span id="toggleCSText">ComingSoon</span>
+                </button>
+                <button id="toggleFormBtn" onclick="toggleForm()" class="btn-primary flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span id="toggleFormText">Tambah Lagu</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Form -->
+        <!-- Coming Soon Form -->
+        <div id="csFormPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0; border-left: 4px solid #f9a825;">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-yt-text mb-1">Tambah Coming Soon</h2>
+                <p class="text-xs text-yt-text-light mb-5">Lagu akan muncul sebagai "Coming Soon". Link YouTube diminta saat publish.</p>
+                <form id="csForm" onsubmit="handleCSSubmit(event)">
+                    <input type="hidden" id="csEditId" value="">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="form-label">URL Gambar *</label>
+                            <input type="url" id="cs_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="form-label">Nama Musik *</label>
+                            <input type="text" id="cs_title" class="form-input" placeholder="Judul lagu" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Durasi</label>
+                            <input type="text" id="cs_duration" class="form-input" placeholder="3:45">
+                        </div>
+                        <div>
+                            <label class="form-label">Tanggal Rilis</label>
+                            <input type="date" id="cs_releaseDate" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label">Tanggal Entri Pertama</label>
+                            <input type="date" id="cs_firstEntryDate" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label">Posisi Masuk Pertama</label>
+                            <input type="number" id="cs_firstEntryPosition" class="form-input" placeholder="1">
+                        </div>
+                        <div>
+                            <label class="form-label">Produsen</label>
+                            <input type="text" id="cs_producer" class="form-input" placeholder="Nama produsen">
+                        </div>
+                        <div>
+                            <label class="form-label">Penulis Lagu</label>
+                            <input type="text" id="cs_songWriter" class="form-input" placeholder="Nama penulis">
+                        </div>
+                        <div>
+                            <label class="form-label">Sumber</label>
+                            <input type="text" id="cs_source" class="form-input" placeholder="Sumber lirik/data">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="form-label">Lirik</label>
+                            <textarea id="cs_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-6">
+                        <button type="submit" class="btn-primary" style="background:#f9a825;color:#000;" onmouseover="this.style.background='#f57f17'" onmouseout="this.style.background='#f9a825'" id="csSubmitBtn">Simpan Coming Soon</button>
+                        <button type="button" onclick="resetCSForm();toggleCSForm()" class="btn-secondary">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Form Tambah Lagu -->
         <div id="formPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0;">
             <div class="p-6">
                 <h2 id="formTitle" class="text-lg font-medium text-yt-text mb-5">Tambah Lagu Baru</h2>
                 <form id="songForm" onsubmit="handleSubmit(event)">
                     <input type="hidden" id="editId" value="">
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="form-label">URL Gambar *</label>
                             <input type="url" id="f_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
-                            <p class="text-xs text-yt-text-light mt-1">Tempel link gambar (Imgur, dll)</p>
+                            <p class="text-xs text-yt-text-light mt-1">Tempel link gambar (Imgur, DLL)</p>
                         </div>
                         <div class="sm:col-span-2">
                             <label class="form-label">Nama Musik *</label>
@@ -169,20 +265,22 @@
                             <textarea id="f_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
                         </div>
                     </div>
-
                     <div class="flex gap-3 mt-6">
-                        <button type="submit" class="btn-primary flex items-center gap-2" id="submitBtn">
-                            <span id="submitText">Simpan</span>
-                            <span id="submitSpinner" class="submit-spinner hidden"></span>
-                        </button>
+                        <button type="submit" class="btn-primary" id="submitBtn">Simpan</button>
                         <button type="button" onclick="resetForm();toggleForm()" class="btn-secondary">Batal</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="bg-white rounded-xl border border-yt-border overflow-hidden">
+        <!-- Published Songs Table -->
+        <div class="bg-white rounded-xl border border-yt-border overflow-hidden mb-6">
+            <div class="px-6 py-3 border-b border-yt-border bg-yt-bg">
+                <h3 class="text-sm font-medium text-yt-text-secondary flex items-center gap-2">
+                    <i data-lucide="music" class="w-4 h-4"></i>
+                    Lagu Published
+                </h3>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -202,6 +300,32 @@
             </div>
         </div>
 
+        <!-- Coming Soon Table -->
+        <div class="bg-white rounded-xl border border-yt-border overflow-hidden" style="border-left: 4px solid #f9a825;">
+            <div class="px-6 py-3 border-b border-yt-border" style="background:#fffde7;">
+                <h3 class="text-sm font-medium flex items-center gap-2" style="color:#f57f17;">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    Coming Soon
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-yt-border" style="background:#fffde7;">
+                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Gambar</th>
+                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Nama Musik</th>
+                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden md:table-cell">Durasi</th>
+                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Penulis</th>
+                            <th class="text-right py-3 px-4 font-medium text-yt-text-secondary">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="csTable">
+                        <tr><td colspan="5" class="py-12 text-center text-yt-text-light">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <p class="text-xs text-yt-text-light text-center mt-6">Lyric.o Staff Dashboard — Data disimpan di Firebase Firestore</p>
     </main>
 
@@ -216,15 +340,59 @@
             measurementId: "G-MLGPGY8Y1G"
         });
         const db = firebase.firestore();
+        const auth = firebase.auth();
         let deleteTargetId = null;
+        let deleteTargetCollection = 'songs';
+        let publishTargetId = null;
 
         lucide.createIcons();
 
-        // Form toggle
+        // ===== AUTH =====
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('loginScreen').style.display = 'none';
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        });
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
+            const btnText = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginSpinner');
+
+            errEl.classList.add('hidden');
+            btnText.textContent = 'Memproses...';
+            spinner.classList.remove('hidden');
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    btnText.textContent = 'Masuk';
+                    spinner.classList.add('hidden');
+                })
+                .catch(err => {
+                    errEl.textContent = err.message;
+                    errEl.classList.remove('hidden');
+                    btnText.textContent = 'Masuk';
+                    spinner.classList.add('hidden');
+                });
+        }
+
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        // ===== TOGGLE FORMS =====
         let formOpen = false;
+        let csFormOpen = false;
+
         function toggleForm() {
             const panel = document.getElementById('formPanel');
             const text = document.getElementById('toggleFormText');
+            if (csFormOpen) toggleCSForm(); // close CS form if open
             formOpen = !formOpen;
             if (formOpen) {
                 panel.style.maxHeight = '1200px';
@@ -240,13 +408,31 @@
             }
         }
 
+        function toggleCSForm() {
+            const panel = document.getElementById('csFormPanel');
+            const text = document.getElementById('toggleCSText');
+            if (formOpen) toggleForm(); // close normal form if open
+            csFormOpen = !csFormOpen;
+            if (csFormOpen) {
+                panel.style.maxHeight = '1200px';
+                panel.style.opacity = '1';
+                panel.style.marginBottom = '24px';
+                text.textContent = 'Tutup Form';
+            } else {
+                panel.style.maxHeight = '0';
+                panel.style.opacity = '0';
+                panel.style.marginBottom = '0';
+                text.textContent = 'ComingSoon';
+                resetCSForm();
+            }
+        }
+
+        // ===== NORMAL FORM =====
         function resetForm() {
             document.getElementById('songForm').reset();
             document.getElementById('editId').value = '';
             document.getElementById('formTitle').textContent = 'Tambah Lagu Baru';
-            document.getElementById('submitText').textContent = 'Simpan';
-            document.getElementById('submitSpinner').classList.add('hidden');
-            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = 'Simpan';
         }
 
         function fillForm(data) {
@@ -263,23 +449,9 @@
             document.getElementById('f_source').value = data.source || '';
             document.getElementById('f_lyrics').value = data.lyrics || '';
             document.getElementById('formTitle').textContent = 'Edit Lagu';
-            document.getElementById('submitText').textContent = 'Perbarui';
+            document.getElementById('submitBtn').textContent = 'Perbarui';
             if (!formOpen) toggleForm();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function setSubmitting(isSubmitting) {
-            const btn = document.getElementById('submitBtn');
-            const text = document.getElementById('submitText');
-            const spinner = document.getElementById('submitSpinner');
-            btn.disabled = isSubmitting;
-            if (isSubmitting) {
-                spinner.classList.remove('hidden');
-                text.textContent = 'Menyimpan...';
-            } else {
-                spinner.classList.add('hidden');
-                text.textContent = document.getElementById('editId').value ? 'Perbarui' : 'Simpan';
-            }
         }
 
         function handleSubmit(e) {
@@ -299,36 +471,95 @@
                 lyrics: document.getElementById('f_lyrics').value,
             };
 
-            setSubmitting(true);
-
             if (editId) {
                 db.collection('songs').doc(editId).update(data).then(() => {
                     showToast('Lagu berhasil diperbarui');
                     resetForm();
                     if (formOpen) toggleForm();
-                }).catch(err => {
-                    showToast('Gagal: ' + err.message);
-                }).finally(() => setSubmitting(false));
+                }).catch(err => showToast('Gagal: ' + err.message));
             } else {
                 data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 db.collection('songs').add(data).then(() => {
                     showToast('Lagu berhasil ditambahkan');
                     resetForm();
                     if (formOpen) toggleForm();
-                }).catch(err => {
-                    showToast('Gagal: ' + err.message);
-                }).finally(() => setSubmitting(false));
+                }).catch(err => showToast('Gagal: ' + err.message));
             }
         }
 
+        // ===== COMING SOON FORM =====
+        function resetCSForm() {
+            document.getElementById('csForm').reset();
+            document.getElementById('csEditId').value = '';
+            document.getElementById('csSubmitBtn').textContent = 'Simpan Coming Soon';
+        }
+
+        function fillCSForm(data) {
+            document.getElementById('csEditId').value = data.id;
+            document.getElementById('cs_imageUrl').value = data.imageUrl || '';
+            document.getElementById('cs_title').value = data.title || '';
+            document.getElementById('cs_duration').value = data.duration || '';
+            document.getElementById('cs_releaseDate').value = data.releaseDate || '';
+            document.getElementById('cs_firstEntryDate').value = data.firstEntryDate || '';
+            document.getElementById('cs_firstEntryPosition').value = data.firstEntryPosition || '';
+            document.getElementById('cs_producer').value = data.producer || '';
+            document.getElementById('cs_songWriter').value = data.songWriter || '';
+            document.getElementById('cs_source').value = data.source || '';
+            document.getElementById('cs_lyrics').value = data.lyrics || '';
+            document.getElementById('csSubmitBtn').textContent = 'Perbarui Coming Soon';
+            if (!csFormOpen) toggleCSForm();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleCSSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('csEditId').value;
+            const data = {
+                imageUrl: document.getElementById('cs_imageUrl').value.trim(),
+                title: document.getElementById('cs_title').value.trim(),
+                youtubeLink: '',
+                duration: document.getElementById('cs_duration').value.trim(),
+                releaseDate: document.getElementById('cs_releaseDate').value,
+                firstEntryDate: document.getElementById('cs_firstEntryDate').value,
+                firstEntryPosition: document.getElementById('cs_firstEntryPosition').value,
+                producer: document.getElementById('cs_producer').value.trim(),
+                songWriter: document.getElementById('cs_songWriter').value.trim(),
+                source: document.getElementById('cs_source').value.trim(),
+                lyrics: document.getElementById('cs_lyrics').value,
+            };
+
+            if (editId) {
+                db.collection('coming_soon').doc(editId).update(data).then(() => {
+                    showToast('Coming Soon berhasil diperbarui');
+                    resetCSForm();
+                    if (csFormOpen) toggleCSForm();
+                }).catch(err => showToast('Gagal: ' + err.message));
+            } else {
+                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                db.collection('coming_soon').add(data).then(() => {
+                    showToast('Coming Soon berhasil ditambahkan');
+                    resetCSForm();
+                    if (csFormOpen) toggleCSForm();
+                }).catch(err => showToast('Gagal: ' + err.message));
+            }
+        }
+
+        // ===== EDIT / DELETE =====
         function editSong(id) {
             db.collection('songs').doc(id).get().then(doc => {
                 if (doc.exists) fillForm({ id: doc.id, ...doc.data() });
             });
         }
 
-        function openDeleteConfirm(id) {
+        function editCS(id) {
+            db.collection('coming_soon').doc(id).get().then(doc => {
+                if (doc.exists) fillCSForm({ id: doc.id, ...doc.data() });
+            });
+        }
+
+        function openDeleteConfirm(id, collection) {
             deleteTargetId = id;
+            deleteTargetCollection = collection || 'songs';
             document.getElementById('deleteConfirm').classList.add('open');
         }
         function closeDeleteConfirm() {
@@ -337,9 +568,41 @@
         }
         function confirmDelete() {
             if (!deleteTargetId) return;
-            db.collection('songs').doc(deleteTargetId).delete().then(() => {
-                showToast('Lagu berhasil dihapus');
+            db.collection(deleteTargetCollection).doc(deleteTargetId).delete().then(() => {
+                showToast('Berhasil dihapus');
                 closeDeleteConfirm();
+            }).catch(err => showToast('Gagal: ' + err.message));
+        }
+
+        // ===== PUBLISH =====
+        function openPublishModal(id) {
+            publishTargetId = id;
+            document.getElementById('publishYoutubeLink').value = '';
+            document.getElementById('publishModal').classList.add('open');
+            lucide.createIcons();
+        }
+        function closePublishModal() {
+            publishTargetId = null;
+            document.getElementById('publishModal').classList.remove('open');
+        }
+        function confirmPublish() {
+            if (!publishTargetId) return;
+            const ytLink = document.getElementById('publishYoutubeLink').value.trim();
+            if (!ytLink) {
+                showToast('Link YouTube wajib diisi');
+                return;
+            }
+            db.collection('coming_soon').doc(publishTargetId).get().then(doc => {
+                if (!doc.exists) { showToast('Data tidak ditemukan'); return; }
+                const data = doc.data();
+                data.youtubeLink = ytLink;
+                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                db.collection('songs').add(data).then(() => {
+                    return db.collection('coming_soon').doc(publishTargetId).delete();
+                }).then(() => {
+                    showToast('Lagu berhasil dipublish!');
+                    closePublishModal();
+                });
             }).catch(err => showToast('Gagal: ' + err.message));
         }
 
@@ -350,35 +613,20 @@
             return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
-        function getVideoId(url) {
-            if (!url) return null;
-            const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
-            return m ? m[1] : null;
-        }
-
-        function updateStats(songs) {
-            document.getElementById('statTotal').textContent = songs.length;
-            document.getElementById('statLyrics').textContent = songs.filter(s => s.lyrics && s.lyrics.trim()).length;
-            document.getElementById('statVideo').textContent = songs.filter(s => getVideoId(s.youtubeLink)).length;
-            document.getElementById('statLatest').textContent = songs.length > 0 ? songs[0].title || '-' : '-';
-        }
-
-        // Real-time listener
+        // ===== REAL-TIME LISTENERS =====
         db.collection('songs').orderBy('createdAt', 'desc').onSnapshot(snap => {
             const table = document.getElementById('songTable');
-            const songs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            updateStats(songs);
-
             if (snap.empty) {
                 table.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-yt-text-light">Belum ada lagu. Klik "Tambah Lagu" untuk memulai.</td></tr>';
+                lucide.createIcons();
                 return;
             }
-            table.innerHTML = songs.map(doc => {
-                const s = doc;
+            table.innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
                 return `
                     <tr class="table-row border-b border-yt-border last:border-0">
                         <td class="py-3 px-4">
-                            <img src="${s.imageUrl || 'https://picsum.photos/seed/thumb/80/45'}" class="w-20 h-[45px] object-cover rounded-md bg-yt-bg" loading="lazy" onerror="this.src='https://picsum.photos/seed/err/80/45'">
+                            <img src="${s.imageUrl || 'https://picsum.photos/seed/thumb/80/45'}" class="w-20 h-[45px] object-cover rounded-md bg-yt-bg" onerror="this.src='https://picsum.photos/seed/err/80/45'">
                         </td>
                         <td class="py-3 px-4">
                             <p class="font-medium text-yt-text line-clamp-2">${s.title || '-'}</p>
@@ -388,15 +636,49 @@
                         <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${formatDate(s.releaseDate)}</td>
                         <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.producer || '-'}</td>
                         <td class="py-3 px-4 text-right whitespace-nowrap">
-                            <button onclick="editSong('${s.id}')" class="btn-edit mr-1">Edit</button>
-                            <button onclick="openDeleteConfirm('${s.id}')" class="btn-danger">Hapus</button>
+                            <button onclick="editSong('${doc.id}')" class="btn-edit mr-1">Edit</button>
+                            <button onclick="openDeleteConfirm('${doc.id}','songs')" class="btn-danger">Hapus</button>
                         </td>
                     </tr>
                 `;
             }).join('');
+            lucide.createIcons();
         }, err => {
             console.error(err);
-            document.getElementById('songTable').innerHTML = `<tr><td colspan="6" class="py-12 text-center text-red-500">Gagal memuat data. Pastikan aturan Firestore mengizinkan baca/tulis.</td></tr>`;
+            document.getElementById('songTable').innerHTML = `<tr><td colspan="6" class="py-12 text-center text-red-500">Gagal memuat data.</td></tr>`;
+        });
+
+        db.collection('coming_soon').orderBy('createdAt', 'desc').onSnapshot(snap => {
+            const table = document.getElementById('csTable');
+            if (snap.empty) {
+                table.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-yt-text-light">Belum ada Coming Soon.</td></tr>';
+                lucide.createIcons();
+                return;
+            }
+            table.innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
+                return `
+                    <tr class="table-row border-b border-yt-border last:border-0">
+                        <td class="py-3 px-4">
+                            <img src="${s.imageUrl || 'https://picsum.photos/seed/csthumb/80/45'}" class="w-20 h-[45px] object-cover rounded-md bg-yt-bg" onerror="this.src='https://picsum.photos/seed/cserr/80/45'">
+                        </td>
+                        <td class="py-3 px-4">
+                            <p class="font-medium text-yt-text line-clamp-2">${s.title || '-'}</p>
+                        </td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden md:table-cell">${s.duration || '-'}</td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.songWriter || '-'}</td>
+                        <td class="py-3 px-4 text-right whitespace-nowrap">
+                            <button onclick="openPublishModal('${doc.id}')" class="btn-publish mr-1">Publish</button>
+                            <button onclick="editCS('${doc.id}')" class="btn-edit mr-1">Edit</button>
+                            <button onclick="openDeleteConfirm('${doc.id}','coming_soon')" class="btn-danger">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }, err => {
+            console.error(err);
+            document.getElementById('csTable').innerHTML = `<tr><td colspan="5" class="py-12 text-center text-red-500">Gagal memuat data.</td></tr>`;
         });
 
         let toastTimeout;
