@@ -70,14 +70,12 @@
 
     <!-- Top Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-50 h-14 flex items-center justify-between px-4">
-        <!-- Left: Menu only -->
         <div class="flex items-center">
             <button id="menuBtn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover transition-colors">
                 <i data-lucide="menu" class="w-6 h-6 text-yt-icon"></i>
             </button>
         </div>
 
-        <!-- Center: Search -->
         <div class="flex items-center flex-1 max-w-[640px] mx-4">
             <div class="flex flex-1 items-center">
                 <div class="flex flex-1 h-10 border border-yt-border rounded-l-full overflow-hidden focus-within:border-[#1c62b9] focus-within:shadow-inner">
@@ -89,7 +87,6 @@
             </div>
         </div>
 
-        <!-- Right: Profile only -->
         <div class="flex items-center">
             <button onclick="showToast('Menu akun')">
                 <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Profile" class="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity">
@@ -99,88 +96,14 @@
 
     <!-- Sidebar -->
     <aside id="sidebar" class="fixed left-0 top-14 bottom-0 w-[240px] bg-white overflow-y-auto z-40 pb-8 pt-2 px-3 transition-transform duration-200">
-        <div class="mb-3 pb-3 border-b border-yt-border">
+        <div class="pb-3 border-b border-yt-border">
             <div class="sidebar-item active" onclick="showToast('Beranda')">
                 <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
                 <span class="text-sm">Beranda</span>
             </div>
-            <div class="sidebar-item" onclick="showToast('Shorts')">
-                <span class="icon-wrap">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M10 14.65v-5.3L15 12l-5 2.65zm7.77-4.33c-.77-.32-1.2-.5-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25.03.01 1.2.5 1.2.5L6 14.93c-1.83.97-2.53 3.24-1.56 5.07.97 1.83 3.24 2.53 5.07 1.56l8.5-4.5c1.29-.68 2.06-2.04 1.99-3.49-.07-1.42-.94-2.68-2.23-3.25z"/></svg>
-                </span>
-                <span class="text-sm">Shorts</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Subscription')">
-                <span class="icon-wrap"><i data-lucide="clapperboard" class="w-6 h-6"></i></span>
-                <span class="text-sm">Subscription</span>
-            </div>
-        </div>
-
-        <div class="mb-3 pb-3 border-b border-yt-border">
-            <div class="sidebar-item" onclick="showToast('Anda')">
-                <span class="icon-wrap"><i data-lucide="user-round" class="w-6 h-6"></i></span>
-                <span class="text-sm">Anda</span>
-                <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-yt-text-secondary"></i>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Riwayat')">
-                <span class="icon-wrap"><i data-lucide="history" class="w-6 h-6"></i></span>
-                <span class="text-sm">Riwayat</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Playlist')">
-                <span class="icon-wrap"><i data-lucide="list-video" class="w-6 h-6"></i></span>
-                <span class="text-sm">Playlist</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Video Anda')">
-                <span class="icon-wrap"><i data-lucide="play-square" class="w-6 h-6"></i></span>
-                <span class="text-sm">Video Anda</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Tonton nanti')">
-                <span class="icon-wrap"><i data-lucide="clock" class="w-6 h-6"></i></span>
-                <span class="text-sm">Tonton nanti</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Suka video')">
-                <span class="icon-wrap"><i data-lucide="thumbs-up" class="w-6 h-6"></i></span>
-                <span class="text-sm">Suka video</span>
-            </div>
-        </div>
-
-        <div class="mb-3 pb-3 border-b border-yt-border">
-            <p class="px-3 pt-1.5 pb-1 text-base font-medium text-yt-text">Subscription</p>
-            <div class="sidebar-item" onclick="showToast('Channel 1')">
-                <span class="icon-wrap">
-                    <div class="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white text-[10px] font-medium">C1</div>
-                </span>
-                <span class="text-sm truncate">Channel 1</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Channel 2')">
-                <span class="icon-wrap">
-                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-medium">C2</div>
-                </span>
-                <span class="text-sm truncate">Channel 2</span>
-            </div>
-        </div>
-
-        <div class="mb-3 pb-3">
-            <p class="px-3 pt-1.5 pb-1 text-base font-medium text-yt-text">Jelajahi</p>
-            <div class="sidebar-item" onclick="showToast('Trending')">
-                <span class="icon-wrap"><i data-lucide="flame" class="w-6 h-6"></i></span>
-                <span class="text-sm">Trending</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Musik')">
+            <div class="sidebar-item" onclick="showToast('Populer Music')">
                 <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
-                <span class="text-sm">Musik</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Gaming')">
-                <span class="icon-wrap"><i data-lucide="gamepad-2" class="w-6 h-6"></i></span>
-                <span class="text-sm">Gaming</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Berita')">
-                <span class="icon-wrap"><i data-lucide="newspaper" class="w-6 h-6"></i></span>
-                <span class="text-sm">Berita</span>
-            </div>
-            <div class="sidebar-item" onclick="showToast('Olahraga')">
-                <span class="icon-wrap"><i data-lucide="trophy" class="w-6 h-6"></i></span>
-                <span class="text-sm">Olahraga</span>
+                <span class="text-sm">Populer Music</span>
             </div>
         </div>
 
@@ -205,14 +128,10 @@
         <!-- Channel Info -->
         <div class="bg-white px-6 pb-4">
             <div class="flex flex-col md:flex-row md:items-start gap-4 pt-4">
-                <!-- Avatar -->
                 <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Lyric.o" class="w-[128px] h-[128px] rounded-full object-cover flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
                 
-                <!-- Info -->
                 <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-normal text-yt-text tracking-tight">Lyric.o</h1>
-                    </div>
+                    <h1 class="text-xl font-normal text-yt-text tracking-tight">Lyric.o</h1>
                     <p class="text-sm text-yt-text-secondary mt-0.5">@LyricalD</p>
                     <p class="text-sm text-yt-text-secondary mt-0.5">3 subscriber</p>
                     <div class="mt-2">
@@ -230,7 +149,6 @@
                     </div>
                 </div>
 
-                <!-- Button: Berlangganan only -->
                 <div class="flex items-center gap-2 flex-shrink-0 mt-2 md:mt-4">
                     <button onclick="showToast('Berlangganan')" class="h-9 px-6 bg-yt-text text-white rounded-full text-sm font-medium hover:bg-[#272727] transition-colors flex items-center gap-2">
                         <i data-lucide="bell" class="w-4 h-4"></i>
@@ -240,7 +158,7 @@
             </div>
         </div>
 
-        <!-- Channel Tabs — only Beranda -->
+        <!-- Channel Tabs -->
         <div class="bg-white border-b border-yt-border sticky top-14 z-20">
             <div class="flex overflow-x-auto px-6 no-scrollbar">
                 <div class="channel-tab active">Beranda</div>
@@ -250,17 +168,14 @@
         <!-- Content Area -->
         <div class="p-6">
             <div id="tab-home">
-                <!-- Music heading only, no content -->
                 <h2 class="text-lg font-normal text-yt-text mb-6">Music</h2>
             </div>
         </div>
     </main>
 
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Sidebar toggle
         let sidebarOpen = true;
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -291,7 +206,6 @@
 
         document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
 
-        // Responsive sidebar
         function handleResize() {
             const sidebar = document.getElementById('sidebar');
             const main = document.getElementById('mainContent');
@@ -315,7 +229,6 @@
         window.addEventListener('resize', handleResize);
         handleResize();
 
-        // Description toggle with smooth expand
         let descExpanded = false;
         function toggleDesc() {
             const descShort = document.getElementById('descShort');
@@ -335,7 +248,6 @@
             }
         }
 
-        // Search
         function handleSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (query) {
@@ -349,7 +261,6 @@
             if (e.key === 'Enter') handleSearch();
         });
 
-        // Toast notification
         let toastTimeout;
         function showToast(message) {
             const toast = document.getElementById('toast');
