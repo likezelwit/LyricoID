@@ -50,6 +50,7 @@
         .desc-full.expanded { max-height: 300px; opacity: 1; }
         .song-card { cursor: pointer; transition: transform 0.1s; }
         .song-card:hover .thumb-overlay { opacity: 1; }
+        .song-card:hover { transform: scale(1.02); }
         .thumb-overlay { opacity: 0; transition: opacity 0.15s; }
         .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
         .modal-backdrop.open { display: flex; }
@@ -59,6 +60,7 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .song-count-badge { display: inline-flex; align-items: center; gap: 4px; background: #f2f2f2; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #606060; }
     </style>
 </head>
 <body class="font-roboto">
@@ -156,7 +158,13 @@
         </div>
 
         <div class="p-6">
-            <h2 class="text-lg font-normal text-yt-text mb-6">Music</h2>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-normal text-yt-text">Music</h2>
+                <span id="songCountBadge" class="song-count-badge hidden">
+                    <i data-lucide="music-2" class="w-3.5 h-3.5"></i>
+                    <span id="songCountText">0 lagu</span>
+                </span>
+            </div>
             <div id="songGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
                 <!-- Skeletons -->
                 <div><div class="skeleton w-full aspect-video mb-3"></div><div class="skeleton h-4 w-3/4 mb-2"></div><div class="skeleton h-3 w-1/2"></div></div>
@@ -194,20 +202,37 @@
             return m ? m[1] : null;
         }
 
+        function updateSongCount(count) {
+            const badge = document.getElementById('songCountBadge');
+            const text = document.getElementById('songCountText');
+            if (count > 0) {
+                badge.classList.remove('hidden');
+                text.textContent = count + ' lagu';
+                lucide.createIcons();
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
         function renderSongs(songs) {
             const grid = document.getElementById('songGrid');
             const empty = document.getElementById('emptyState');
             if (!songs.length) {
                 grid.innerHTML = '';
                 empty.classList.remove('hidden');
+                updateSongCount(0);
                 lucide.createIcons();
                 return;
             }
             empty.classList.add('hidden');
-            grid.innerHTML = songs.map((s, i) => `
-                <div class="song-card" onclick="openModal(${i})">
+            updateSongCount(songs.length);
+            grid.innerHTML = songs.map((s, i) => {
+                // Cari index sebenarnya di allSongs
+                const realIndex = allSongs.indexOf(s);
+                return `
+                <div class="song-card" onclick="openModal(${realIndex})">
                     <div class="relative rounded-xl overflow-hidden mb-3 bg-yt-chip-bg aspect-video">
-                        <img src="${s.imageUrl || 'https://picsum.photos/seed/song'+i+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/seed/fallback'+i+'/640/360'">
+                        <img src="${s.imageUrl || 'https://picsum.photos/seed/song'+i+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://picsum.photos/seed/fallback'+i+'/640/360'">
                         <div class="thumb-overlay absolute inset-0 bg-black/10 flex items-center justify-center">
                             <div class="w-12 h-12 bg-black/70 rounded-full flex items-center justify-center">
                                 <i data-lucide="play" class="w-6 h-6 text-white fill-white"></i>
@@ -216,13 +241,15 @@
                         ${s.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">${s.duration}</span>` : ''}
                     </div>
                     <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
+                    ${s.songWriter ? `<p class="text-xs text-yt-text-secondary mt-0.5 line-clamp-1">${s.songWriter}</p>` : ''}
                 </div>
-            `).join('');
+            `}).join('');
             lucide.createIcons();
         }
 
         function openModal(index) {
             const s = allSongs[index];
+            if (!s) return;
             const vid = getVideoId(s.youtubeLink);
             const modal = document.getElementById('songModal');
             const body = document.getElementById('modalBody');
@@ -230,15 +257,15 @@
                 <button onclick="closeModal()" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover z-10 transition-colors">
                     <i data-lucide="x" class="w-6 h-6 text-yt-icon"></i>
                 </button>
-                ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` : 
+                ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` :
                 `<div class="w-full aspect-video bg-yt-chip-bg"><img src="${s.imageUrl || ''}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-yt-text-light\\'>Tidak ada gambar</div>'"></div>`}
                 <div class="p-6">
                     <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
                         <div><span class="text-yt-text-light">Nama Musik</span><p class="text-yt-text mt-0.5">${s.title || '-'}</p></div>
                         <div><span class="text-yt-text-light">Durasi</span><p class="text-yt-text mt-0.5">${s.duration || '-'}</p></div>
-                        <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${s.releaseDate || '-'}</p></div>
-                        <div><span class="text-yt-text-light">Tanggal Entri Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryDate || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${formatDate(s.releaseDate)}</p></div>
+                        <div><span class="text-yt-text-light">Tanggal Entri Pertama</span><p class="text-yt-text mt-0.5">${formatDate(s.firstEntryDate)}</p></div>
                         <div><span class="text-yt-text-light">Posisi Masuk Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryPosition || '-'}</p></div>
                         <div><span class="text-yt-text-light">Produsen</span><p class="text-yt-text mt-0.5">${s.producer || '-'}</p></div>
                         <div><span class="text-yt-text-light">Penulis Lagu</span><p class="text-yt-text mt-0.5">${s.songWriter || '-'}</p></div>
@@ -247,7 +274,16 @@
                             ${s.youtubeLink ? `<a href="${s.youtubeLink}" target="_blank" class="text-yt-blue hover:text-yt-blue-hover mt-0.5 block truncate">${s.youtubeLink}</a>` : '<p class="text-yt-text mt-0.5">-</p>'}
                         </div>
                     </div>
-                    ${s.lyrics ? `<div class="mt-6"><span class="text-yt-text-light text-sm">Lirik</span><div class="mt-2 bg-yt-bg rounded-xl p-4 max-h-[300px] overflow-y-auto text-sm text-yt-text leading-relaxed whitespace-pre-line border border-yt-border">${s.lyrics}</div></div>` : ''}
+                    ${s.lyrics ? `
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-yt-text-light text-sm">Lirik</span>
+                            <button onclick="copyText(\`${s.lyrics.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="text-xs text-yt-blue hover:text-yt-blue-hover flex items-center gap-1 transition-colors">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+                            </button>
+                        </div>
+                        <div class="bg-yt-bg rounded-xl p-4 max-h-[300px] overflow-y-auto text-sm text-yt-text leading-relaxed whitespace-pre-line border border-yt-border">${s.lyrics}</div>
+                    </div>` : ''}
                 </div>
             `;
             modal.classList.add('open');
@@ -258,12 +294,40 @@
         function closeModal() {
             document.getElementById('songModal').classList.remove('open');
             document.body.style.overflow = '';
+            // Hentikan video YouTube jika ada
+            const iframe = document.querySelector('#modalBody iframe');
+            if (iframe) iframe.src = iframe.src;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Lirik berhasil disalin!');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Lirik berhasil disalin!');
+            });
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            const date = new Date(d);
+            if (isNaN(date)) return d;
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         function filterSongs(query) {
             const q = query.toLowerCase().trim();
             if (!q) { renderSongs(allSongs); return; }
-            renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q)));
+            renderSongs(allSongs.filter(s =>
+                (s.title || '').toLowerCase().includes(q) ||
+                (s.songWriter || '').toLowerCase().includes(q) ||
+                (s.producer || '').toLowerCase().includes(q)
+            ));
         }
 
         // Fetch songs
