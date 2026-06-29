@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyric.o - YouTube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        'yt-red': '#FF0000',
+                        'yt-red-hover': '#CC0000',
+                        'yt-black': '#0f0f0f',
+                        'yt-text': '#0f0f0f',
+                        'yt-text-secondary': '#606060',
+                        'yt-text-light': '#909090',
+                        'yt-bg': '#f9f9f9',
+                        'yt-chip-bg': '#f2f2f2',
+                        'yt-chip-active': '#0f0f0f',
+                        'yt-chip-active-text': '#fff',
+                        'yt-blue': '#065fd4',
+                        'yt-blue-hover': '#0550b5',
+                        'yt-border': '#e5e5e5',
+                        'yt-hover': '#f2f2f2',
+                        'yt-icon': '#030303',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: #f9f9f9; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #909090; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #606060; }
+
+        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+        .sidebar-item:hover { background: #f2f2f2; }
+        .sidebar-item.active { background: #f2f2f2; font-weight: 500; }
+        .sidebar-item .icon-wrap { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        .banner-container { width: 100%; max-height: 350px; overflow: hidden; position: relative; }
+        .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .channel-tab { padding: 12px 16px; font-size: 14px; color: #606060; cursor: pointer; position: relative; white-space: nowrap; transition: color 0.15s; }
+        .channel-tab:hover { color: #0f0f0f; }
+        .channel-tab.active { color: #0f0f0f; font-weight: 500; }
+        .channel-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #0f0f0f; border-radius: 3px 3px 0 0; }
+
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .desc-full { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+        .desc-full.expanded { max-height: 300px; opacity: 1; }
+    </style>
+</head>
+<body class="font-roboto">
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white z-50 h-14 flex items-center justify-between px-4">
+        <!-- Left: Menu only -->
+        <div class="flex items-center">
+            <button id="menuBtn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover transition-colors">
+                <i data-lucide="menu" class="w-6 h-6 text-yt-icon"></i>
+            </button>
+        </div>
+
+        <!-- Center: Search -->
+        <div class="flex items-center flex-1 max-w-[640px] mx-4">
+            <div class="flex flex-1 items-center">
+                <div class="flex flex-1 h-10 border border-yt-border rounded-l-full overflow-hidden focus-within:border-[#1c62b9] focus-within:shadow-inner">
+                    <input id="searchInput" type="text" placeholder="Cari" class="flex-1 h-full px-4 text-base outline-none bg-transparent text-yt-text placeholder:text-yt-text-light">
+                </div>
+                <button onclick="handleSearch()" class="h-10 w-16 bg-yt-chip-bg border border-l-0 border-yt-border rounded-r-full flex items-center justify-center hover:bg-[#e8e8e8] transition-colors">
+                    <i data-lucide="search" class="w-5 h-5 text-yt-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Profile only -->
+        <div class="flex items-center">
+            <button onclick="showToast('Menu akun')">
+                <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Profile" class="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity">
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-14 bottom-0 w-[240px] bg-white overflow-y-auto z-40 pb-8 pt-2 px-3 transition-transform duration-200">
+        <div class="mb-3 pb-3 border-b border-yt-border">
+            <div class="sidebar-item active" onclick="showToast('Beranda')">
+                <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
+                <span class="text-sm">Beranda</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Shorts')">
+                <span class="icon-wrap">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M10 14.65v-5.3L15 12l-5 2.65zm7.77-4.33c-.77-.32-1.2-.5-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25.03.01 1.2.5 1.2.5L6 14.93c-1.83.97-2.53 3.24-1.56 5.07.97 1.83 3.24 2.53 5.07 1.56l8.5-4.5c1.29-.68 2.06-2.04 1.99-3.49-.07-1.42-.94-2.68-2.23-3.25z"/></svg>
+                </span>
+                <span class="text-sm">Shorts</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Subscription')">
+                <span class="icon-wrap"><i data-lucide="clapperboard" class="w-6 h-6"></i></span>
+                <span class="text-sm">Subscription</span>
+            </div>
+        </div>
+
+        <div class="mb-3 pb-3 border-b border-yt-border">
+            <div class="sidebar-item" onclick="showToast('Anda')">
+                <span class="icon-wrap"><i data-lucide="user-round" class="w-6 h-6"></i></span>
+                <span class="text-sm">Anda</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-yt-text-secondary"></i>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Riwayat')">
+                <span class="icon-wrap"><i data-lucide="history" class="w-6 h-6"></i></span>
+                <span class="text-sm">Riwayat</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Playlist')">
+                <span class="icon-wrap"><i data-lucide="list-video" class="w-6 h-6"></i></span>
+                <span class="text-sm">Playlist</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Video Anda')">
+                <span class="icon-wrap"><i data-lucide="play-square" class="w-6 h-6"></i></span>
+                <span class="text-sm">Video Anda</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Tonton nanti')">
+                <span class="icon-wrap"><i data-lucide="clock" class="w-6 h-6"></i></span>
+                <span class="text-sm">Tonton nanti</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Suka video')">
+                <span class="icon-wrap"><i data-lucide="thumbs-up" class="w-6 h-6"></i></span>
+                <span class="text-sm">Suka video</span>
+            </div>
+        </div>
+
+        <div class="mb-3 pb-3 border-b border-yt-border">
+            <p class="px-3 pt-1.5 pb-1 text-base font-medium text-yt-text">Subscription</p>
+            <div class="sidebar-item" onclick="showToast('Channel 1')">
+                <span class="icon-wrap">
+                    <div class="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white text-[10px] font-medium">C1</div>
+                </span>
+                <span class="text-sm truncate">Channel 1</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Channel 2')">
+                <span class="icon-wrap">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-medium">C2</div>
+                </span>
+                <span class="text-sm truncate">Channel 2</span>
+            </div>
+        </div>
+
+        <div class="mb-3 pb-3">
+            <p class="px-3 pt-1.5 pb-1 text-base font-medium text-yt-text">Jelajahi</p>
+            <div class="sidebar-item" onclick="showToast('Trending')">
+                <span class="icon-wrap"><i data-lucide="flame" class="w-6 h-6"></i></span>
+                <span class="text-sm">Trending</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Musik')">
+                <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
+                <span class="text-sm">Musik</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Gaming')">
+                <span class="icon-wrap"><i data-lucide="gamepad-2" class="w-6 h-6"></i></span>
+                <span class="text-sm">Gaming</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Berita')">
+                <span class="icon-wrap"><i data-lucide="newspaper" class="w-6 h-6"></i></span>
+                <span class="text-sm">Berita</span>
+            </div>
+            <div class="sidebar-item" onclick="showToast('Olahraga')">
+                <span class="icon-wrap"><i data-lucide="trophy" class="w-6 h-6"></i></span>
+                <span class="text-sm">Olahraga</span>
+            </div>
+        </div>
+
+        <div class="px-3 py-3">
+            <p class="text-xs text-yt-text-light leading-5">Tentang Pers Siaran Kontak Creator Iklan Pengembang</p>
+            <p class="text-xs text-yt-text-light leading-5 mt-2">Syarat Privasi Kebijakan & Keamanan</p>
+            <p class="text-xs text-yt-text-light leading-5 mt-2">© 2025 Google LLC</p>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="ml-[240px] mt-14 transition-all duration-200">
+        
+        <!-- Banner -->
+        <div class="banner-container">
+            <img src="https://i.ibb.co.com/hRjNrgJH/5f9a0596-fadb-46cb-b5d3-6ce7fb603253.jpg" alt="Channel Banner">
+        </div>
+
+        <!-- Channel Info -->
+        <div class="bg-white px-6 pb-4">
+            <div class="flex flex-col md:flex-row md:items-start gap-4 pt-4">
+                <!-- Avatar -->
+                <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Lyric.o" class="w-[128px] h-[128px] rounded-full object-cover flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+                
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-normal text-yt-text tracking-tight">Lyric.o</h1>
+                    </div>
+                    <p class="text-sm text-yt-text-secondary mt-0.5">@LyricalD</p>
+                    <p class="text-sm text-yt-text-secondary mt-0.5">3 subscriber</p>
+                    <div class="mt-2">
+                        <p id="descShort" class="text-sm text-yt-text-secondary leading-5">
+                            Selamat datang di LyricoID....
+                        </p>
+                        <div id="descFull" class="desc-full">
+                            <p class="text-sm text-yt-text-secondary leading-5 mt-1">
+                                Selamat datang di LyricoID.<br><br>
+                                Ruang sederhana untuk menikmati untaian lirik dan lagu favorit lewat suguhan visual pastel yang cerah namun menenangkan. Di sini, setiap bait lagu dihadirkan untuk menemani cerita, rasa, dan ruang rindu Anda.<br><br>
+                                Silakan bersandar, mendengarkan, dan meresapi setiap maknanya.
+                            </p>
+                        </div>
+                        <button id="descToggle" onclick="toggleDesc()" class="text-sm font-medium text-yt-text-secondary hover:text-yt-text mt-1">selengkapnya</button>
+                    </div>
+                </div>
+
+                <!-- Button: Berlangganan only -->
+                <div class="flex items-center gap-2 flex-shrink-0 mt-2 md:mt-4">
+                    <button onclick="showToast('Berlangganan')" class="h-9 px-6 bg-yt-text text-white rounded-full text-sm font-medium hover:bg-[#272727] transition-colors flex items-center gap-2">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        Berlangganan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channel Tabs — only Beranda -->
+        <div class="bg-white border-b border-yt-border sticky top-14 z-20">
+            <div class="flex overflow-x-auto px-6 no-scrollbar">
+                <div class="channel-tab active">Beranda</div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-6">
+            <div id="tab-home">
+                <!-- Music heading only, no content -->
+                <h2 class="text-lg font-normal text-yt-text mb-6">Music</h2>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Sidebar toggle
+        let sidebarOpen = true;
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth < 1312) {
+                sidebarOpen = !sidebarOpen;
+                if (sidebarOpen) {
+                    sidebar.style.transform = 'translateX(0)';
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.style.transform = 'translateX(-100%)';
+                    overlay.classList.add('hidden');
+                }
+            } else {
+                sidebarOpen = !sidebarOpen;
+                if (sidebarOpen) {
+                    sidebar.style.transform = 'translateX(0)';
+                    main.style.marginLeft = '240px';
+                    sidebar.style.width = '240px';
+                } else {
+                    sidebar.style.transform = 'translateX(-100%)';
+                    main.style.marginLeft = '0';
+                }
+            }
+        }
+
+        document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+
+        // Responsive sidebar
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth < 1312) {
+                if (sidebarOpen) {
+                    sidebar.style.transform = 'translateX(-100%)';
+                    sidebarOpen = false;
+                }
+                main.style.marginLeft = '0';
+            } else {
+                sidebar.style.transform = 'translateX(0)';
+                main.style.marginLeft = '240px';
+                sidebar.style.width = '240px';
+                sidebarOpen = true;
+                overlay.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        // Description toggle with smooth expand
+        let descExpanded = false;
+        function toggleDesc() {
+            const descShort = document.getElementById('descShort');
+            const descFull = document.getElementById('descFull');
+            const toggle = document.getElementById('descToggle');
+            descExpanded = !descExpanded;
+            if (descExpanded) {
+                descShort.style.display = 'none';
+                descFull.classList.add('expanded');
+                toggle.textContent = 'lebih sedikit';
+            } else {
+                descFull.classList.remove('expanded');
+                toggle.textContent = 'selengkapnya';
+                setTimeout(() => {
+                    if (!descExpanded) descShort.style.display = 'block';
+                }, 400);
+            }
+        }
+
+        // Search
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                showToast('Mencari: ' + query);
+            } else {
+                showToast('Masukkan kata kunci pencarian');
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        // Toast notification
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
