@@ -6,14 +6,17 @@
     <title>Lyric.o - Song Lyrics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { 'roboto': ['Roboto', 'sans-serif'] },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                        'playfair': ['Playfair Display', 'serif'],
+                    },
                     colors: {
                         'lyric-bg': '#faf8f5',
                         'lyric-card': '#ffffff',
@@ -41,15 +44,23 @@
         .lyrics-scroll::-webkit-scrollbar-thumb { background: #d4d0ca; border-radius: 3px; }
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #2d2a26; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
         .toast.show { transform: translateX(-50%) translateY(0); }
-        .song-item { cursor: pointer; transition: all 0.2s ease; }
-        .song-item:hover { background: #f9f7f4; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-        .song-item.active { background: #f5f2ed; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
-        .detail-panel { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.3s ease; opacity: 0; }
-        .detail-panel.open { max-height: 2000px; opacity: 1; }
+        .song-item { cursor: pointer; transition: all 0.25s ease; border: 1px solid transparent; }
+        .song-item:hover { background: #f9f7f4; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.05); border-color: #e8e4df; }
+        .song-item.active { background: #f5f2ed; box-shadow: 0 4px 16px rgba(0,0,0,0.04); border-color: #d4cfc7; }
+        .detail-panel { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease, padding 0.35s ease; opacity: 0; padding: 0 24px; }
+        .detail-panel.open { max-height: 3000px; opacity: 1; padding: 24px; }
         .skeleton { background: #e8e4df; border-radius: 8px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .fade-in { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .lyrics-text { font-family: 'Playfair Display', serif; font-size: 15px; line-height: 2; color: #2d2a26; letter-spacing: 0.01em; }
+        .lyrics-text p { margin-bottom: 1em; }
+        .copy-btn { transition: all 0.2s; }
+        .copy-btn:hover { background: #c4a882; color: #fff; border-color: #c4a882; }
+        .chevron-icon { transition: transform 0.3s ease; }
+        .song-item.active .chevron-icon { transform: rotate(180deg); }
+        .decoration-line { height: 1px; background: linear-gradient(to right, transparent, #c4a882, transparent); }
+        .no-lyrics-hint { font-style: italic; color: #b5b0a8; }
     </style>
 </head>
 <body class="font-roboto min-h-screen">
@@ -80,8 +91,17 @@
     <!-- Main -->
     <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div class="mb-8">
-            <h2 class="text-2xl font-light text-lyric-text tracking-tight">Koleksi Lirik</h2>
+            <h2 class="text-2xl font-light text-lyric-text tracking-tight font-playfair">Koleksi Lirik</h2>
             <p class="text-sm text-lyric-secondary mt-1">Klik lagu untuk melihat lirik lengkap</p>
+            <div class="decoration-line mt-4"></div>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-6">
+            <div class="relative max-w-md">
+                <i data-lucide="search" class="w-4 h-4 text-lyric-light absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                <input id="lyricSearch" type="text" placeholder="Cari judul lagu atau penulis..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-lyric-border rounded-xl text-sm text-lyric-text outline-none focus:border-lyric-accent focus:shadow-sm transition-all placeholder:text-lyric-light" oninput="filterLyrics(this.value)">
+            </div>
         </div>
 
         <!-- Song List -->
@@ -96,7 +116,19 @@
             <p class="text-lyric-secondary text-lg">Belum ada lirik</p>
             <p class="text-lyric-light text-sm mt-1">Lirik akan muncul setelah ditambahkan oleh staff.</p>
         </div>
+
+        <div id="noResults" class="hidden text-center py-16">
+            <i data-lucide="search-x" class="w-14 h-14 text-lyric-light mx-auto mb-4"></i>
+            <p class="text-lyric-secondary">Tidak ditemukan lagu yang cocok</p>
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-lyric-border mt-12 py-8">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+            <p class="text-xs text-lyric-light">Lyric.o — Setiap bait untuk menemani cerita Anda</p>
+        </div>
+    </footer>
 
     <script>
         firebase.initializeApp({
@@ -110,6 +142,7 @@
         });
         const db = firebase.firestore();
         let allSongs = [];
+        let filteredSongs = [];
         let activeIndex = -1;
 
         lucide.createIcons();
@@ -127,13 +160,48 @@
             return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
-        function copyLyrics(text) {
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatLyrics(text) {
+            if (!text) return '';
+            // Konversi baris baru ke paragraf
+            const lines = text.split('\n');
+            let html = '';
+            let currentParagraph = '';
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === '') {
+                    if (currentParagraph) {
+                        html += '<p>' + escapeHtml(currentParagraph) + '</p>';
+                        currentParagraph = '';
+                    }
+                } else {
+                    if (currentParagraph) currentParagraph += '\n';
+                    currentParagraph += line;
+                }
+            }
+            if (currentParagraph) {
+                html += '<p>' + escapeHtml(currentParagraph) + '</p>';
+            }
+            return html;
+        }
+
+        function copyLyrics(index) {
+            const song = filteredSongs[index];
+            if (!song || !song.lyrics) return;
+            const text = song.lyrics;
             navigator.clipboard.writeText(text).then(() => {
                 showToast('Lirik berhasil disalin!');
             }).catch(() => {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
@@ -144,16 +212,16 @@
 
         function toggleSong(index) {
             if (activeIndex === index) {
-                // Close
+                // Tutup panel yang aktif
                 const panel = document.getElementById('detail-' + index);
                 const item = document.getElementById('item-' + index);
-                panel.classList.remove('open');
-                item.classList.remove('active');
+                if (panel) panel.classList.remove('open');
+                if (item) item.classList.remove('active');
                 activeIndex = -1;
                 return;
             }
 
-            // Close previous
+            // Tutup panel sebelumnya
             if (activeIndex >= 0) {
                 const prevPanel = document.getElementById('detail-' + activeIndex);
                 const prevItem = document.getElementById('item-' + activeIndex);
@@ -161,157 +229,146 @@
                 if (prevItem) prevItem.classList.remove('active');
             }
 
-            activeIndex = index;
+            // Buka panel baru
             const panel = document.getElementById('detail-' + index);
             const item = document.getElementById('item-' + index);
-            item.classList.add('active');
+            if (panel) panel.classList.add('open');
+            if (item) item.classList.add('active');
+            activeIndex = index;
 
-            // Small delay for smooth animation
-            requestAnimationFrame(() => {
-                panel.classList.add('open');
-                // Scroll to the panel
-                setTimeout(() => {
-                    item.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            });
+            // Scroll ke panel setelah animasi
+            setTimeout(() => {
+                if (panel) {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 100);
         }
 
         function renderSongs(songs) {
             const list = document.getElementById('songList');
             const empty = document.getElementById('emptyState');
+            const noResults = document.getElementById('noResults');
 
-            if (!songs.length) {
+            // Reset active
+            activeIndex = -1;
+
+            if (allSongs.length === 0) {
                 list.innerHTML = '';
                 empty.classList.remove('hidden');
+                noResults.classList.add('hidden');
                 lucide.createIcons();
                 return;
             }
 
             empty.classList.add('hidden');
+
+            if (songs.length === 0) {
+                list.innerHTML = '';
+                noResults.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
             list.innerHTML = songs.map((s, i) => {
                 const vid = getVideoId(s.youtubeLink);
+                const hasLyrics = s.lyrics && s.lyrics.trim().length > 0;
+
                 return `
-                    <div>
-                        <div id="item-${i}" class="song-item bg-white rounded-xl p-4 flex items-center gap-4 border border-lyric-border/50" onclick="toggleSong(${i})">
-                            <img src="${s.imageUrl || 'https://picsum.photos/seed/lyric'+i+'/128/128'}" alt="${s.title}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/err'+i+'/128/128'">
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-sm font-medium text-lyric-text truncate">${s.title || 'Tanpa Judul'}</h3>
-                                <div class="flex items-center gap-3 mt-1">
-                                    ${s.duration ? `<span class="text-xs text-lyric-secondary flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${s.duration}</span>` : ''}
-                                    ${s.producer ? `<span class="text-xs text-lyric-light">${s.producer}</span>` : ''}
-                                </div>
+                <div class="bg-white rounded-xl overflow-hidden">
+                    <div id="item-${i}" class="song-item flex items-center gap-4 p-4" onclick="toggleSong(${i})">
+                        <img src="${s.imageUrl || 'https://picsum.photos/seed/lyric'+i+'/128/128'}" alt="${escapeHtml(s.title)}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-lyric-box-bg" loading="lazy" onerror="this.src='https://picsum.photos/seed/err'+i+'/128/128'">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-lyric-text truncate">${escapeHtml(s.title || 'Tanpa Judul')}</h3>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                ${s.songWriter ? `<span class="text-xs text-lyric-secondary truncate">${escapeHtml(s.songWriter)}</span>` : ''}
+                                ${s.duration ? `<span class="text-xs text-lyric-light">· ${escapeHtml(s.duration)}</span>` : ''}
                             </div>
-                            <div class="flex-shrink-0 text-lyric-light transition-transform duration-300" id="chevron-${i}" style="transform:rotate(0deg)">
-                                <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                            </div>
-                        </div>
-
-                        <div id="detail-${i}" class="detail-panel">
-                            <div class="bg-white rounded-b-xl border border-t-0 border-lyric-border/50 px-4 sm:px-6 pb-6 pt-4 fade-in">
-                                
-                                <!-- Meta Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mb-6">
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Nama Musik</p>
-                                        <p class="text-sm text-lyric-text font-medium">${s.title || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Link YouTube</p>
-                                        ${s.youtubeLink ? 
-                                            (vid ? `<a href="${s.youtubeLink}" target="_blank" class="text-sm text-lyric-accent-dark hover:text-lyric-accent flex items-center gap-1 transition-colors"><i data-lucide="external-link" class="w-3.5 h-3.5"></i>Buka di YouTube</a>` :
-                                            `<a href="${s.youtubeLink}" target="_blank" class="text-sm text-lyric-accent-dark hover:text-lyric-accent truncate block transition-colors">${s.youtubeLink}</a>`)
-                                            : '<p class="text-sm text-lyric-secondary">-</p>'}
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Durasi</p>
-                                        <p class="text-sm text-lyric-text">${s.duration || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Tanggal Rilis</p>
-                                        <p class="text-sm text-lyric-text">${formatDate(s.releaseDate)}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Tanggal Entri Pertama</p>
-                                        <p class="text-sm text-lyric-text">${formatDate(s.firstEntryDate)}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Posisi Masuk Pertama</p>
-                                        <p class="text-sm text-lyric-text">${s.firstEntryPosition || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Produsen</p>
-                                        <p class="text-sm text-lyric-text">${s.producer || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Penulis Lagu</p>
-                                        <p class="text-sm text-lyric-text">${s.songWriter || '-'}</p>
-                                    </div>
-                                    <div class="sm:col-span-2">
-                                        <p class="text-xs text-lyric-light uppercase tracking-wider mb-1">Sumber</p>
-                                        <p class="text-sm text-lyric-text">${s.source || '-'}</p>
-                                    </div>
-                                </div>
-
-                                ${vid ? `
-                                <!-- YouTube Embed -->
-                                <div class="mb-6 rounded-xl overflow-hidden border border-lyric-border">
-                                    <div class="aspect-video bg-black">
-                                        <iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                    </div>
-                                </div>
-                                ` : ''}
-
-                                ${s.lyrics ? `
-                                <!-- Lyrics Box -->
-                                <div>
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-1 h-5 bg-lyric-accent rounded-full"></div>
-                                            <p class="text-sm font-medium text-lyric-text">Lirik</p>
-                                        </div>
-                                        <button onclick="event.stopPropagation();copyLyrics(${JSON.stringify(s.lyrics.replace(/`/g, '\\`').replace(/\\/g, '\\\\'))})" class="flex items-center gap-1.5 text-xs text-lyric-secondary hover:text-lyric-accent-dark transition-colors px-3 py-1.5 rounded-full border border-lyric-border hover:border-lyric-accent">
-                                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                            Salin Lirik
-                                        </button>
-                                    </div>
-                                    <div class="lyrics-scroll bg-lyric-box-bg rounded-xl border border-lyric-border p-5 max-h-[400px] overflow-y-auto">
-                                        <pre class="text-sm text-lyric-text leading-relaxed whitespace-pre-wrap font-roboto">${s.lyrics}</pre>
-                                    </div>
-                                </div>
-                                ` : `
-                                <div class="bg-lyric-box-bg rounded-xl border border-lyric-border p-8 text-center">
-                                    <i data-lucide="file-text" class="w-8 h-8 text-lyric-light mx-auto mb-2"></i>
-                                    <p class="text-sm text-lyric-light">Lirik belum tersedia</p>
-                                </div>
-                                `}
+                            <div class="flex items-center gap-2 mt-1">
+                                ${hasLyrics ? `<span class="inline-flex items-center gap-1 text-[10px] text-lyric-accent-dark bg-lyric-box-bg px-2 py-0.5 rounded-full"><i data-lucide="file-text" class="w-3 h-3"></i>Lirik</span>` : `<span class="inline-flex items-center gap-1 text-[10px] text-lyric-light bg-lyric-box-bg px-2 py-0.5 rounded-full"><i data-lucide="file-x" class="w-3 h-3"></i>Belum ada lirik</span>`}
+                                ${vid ? `<span class="inline-flex items-center gap-1 text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded-full"><i data-lucide="play-circle" class="w-3 h-3"></i>Video</span>` : ''}
                             </div>
                         </div>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-lyric-light flex-shrink-0 chevron-icon"></i>
                     </div>
-                `;
-            }).join('');
+                    <div id="detail-${i}" class="detail-panel bg-lyric-box-bg border-t border-lyric-border">
+                        <!-- Video -->
+                        ${vid ? `
+                        <div class="mb-5 rounded-xl overflow-hidden bg-black aspect-video max-w-lg">
+                            <iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>` : ''}
+
+                        <!-- Info Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5 text-sm">
+                            ${s.producer ? `<div><span class="text-xs text-lyric-light block">Produsen</span><p class="text-lyric-text mt-0.5">${escapeHtml(s.producer)}</p></div>` : ''}
+                            ${s.releaseDate ? `<div><span class="text-xs text-lyric-light block">Tanggal Rilis</span><p class="text-lyric-text mt-0.5">${formatDate(s.releaseDate)}</p></div>` : ''}
+                            ${s.source ? `<div><span class="text-xs text-lyric-light block">Sumber</span><p class="text-lyric-text mt-0.5">${escapeHtml(s.source)}</p></div>` : ''}
+                        </div>
+
+                        ${s.youtubeLink ? `
+                        <div class="mb-5">
+                            <a href="${s.youtubeLink}" target="_blank" class="inline-flex items-center gap-2 text-sm text-lyric-accent-dark hover:text-lyric-accent transition-colors">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                                Buka di YouTube
+                            </a>
+                        </div>` : ''}
+
+                        <!-- Lirik -->
+                        ${hasLyrics ? `
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-medium text-lyric-text flex items-center gap-2">
+                                    <i data-lucide="quote" class="w-4 h-4 text-lyric-accent"></i>
+                                    Lirik
+                                </h4>
+                                <button onclick="event.stopPropagation(); copyLyrics(${i})" class="copy-btn flex items-center gap-1.5 text-xs text-lyric-accent-dark border border-lyric-accent/30 rounded-full px-3 py-1.5">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    Salin
+                                </button>
+                            </div>
+                            <div class="decoration-line mb-4"></div>
+                            <div class="lyrics-scroll max-h-[400px] overflow-y-auto pr-2 lyrics-text">
+                                ${formatLyrics(s.lyrics)}
+                            </div>
+                        </div>` : `
+                        <div class="text-center py-8">
+                            <i data-lucide="file-text" class="w-10 h-10 text-lyric-light mx-auto mb-3"></i>
+                            <p class="text-sm no-lyrics-hint">Lirik belum tersedia untuk lagu ini.</p>
+                        </div>`}
+                    </div>
+                </div>
+            `}).join('');
 
             lucide.createIcons();
-
-            // Observe detail panels to rotate chevrons
-            songs.forEach((_, i) => {
-                const panel = document.getElementById('detail-' + i);
-                const chevron = document.getElementById('chevron-' + i);
-                if (panel && chevron) {
-                    const observer = new MutationObserver(() => {
-                        chevron.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
-                    });
-                    observer.observe(panel, { attributes: true, attributeFilter: ['class'] });
-                }
-            });
         }
 
-        // Fetch songs
+        function filterLyrics(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                filteredSongs = [...allSongs];
+            } else {
+                filteredSongs = allSongs.filter(s =>
+                    (s.title || '').toLowerCase().includes(q) ||
+                    (s.songWriter || '').toLowerCase().includes(q) ||
+                    (s.producer || '').toLowerCase().includes(q)
+                );
+            }
+            renderSongs(filteredSongs);
+        }
+
+        // Fetch songs — hanya yang punya lirik, atau semua? Tampilkan semua.
         db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
             allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderSongs(allSongs);
+            filteredSongs = [...allSongs];
+            renderSongs(filteredSongs);
         }).catch(err => {
             console.error(err);
-            document.getElementById('songList').innerHTML = `<div class="text-center py-12"><p class="text-red-400 text-sm">Gagal memuat data. Pastikan aturan Firestore mengizinkan pembacaan.</p></div>`;
+            document.getElementById('songList').innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-red-400 text-sm">Gagal memuat data. Pastikan aturan Firestore mengizinkan pembacaan.</p>
+                </div>
+            `;
         });
 
         let toastTimeout;
