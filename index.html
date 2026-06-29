@@ -7,29 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        'roboto': ['Roboto', 'sans-serif'],
-                    },
+                    fontFamily: { 'roboto': ['Roboto', 'sans-serif'] },
                     colors: {
-                        'yt-red': '#FF0000',
-                        'yt-red-hover': '#CC0000',
-                        'yt-black': '#0f0f0f',
-                        'yt-text': '#0f0f0f',
-                        'yt-text-secondary': '#606060',
-                        'yt-text-light': '#909090',
-                        'yt-bg': '#f9f9f9',
-                        'yt-chip-bg': '#f2f2f2',
-                        'yt-chip-active': '#0f0f0f',
-                        'yt-chip-active-text': '#fff',
-                        'yt-blue': '#065fd4',
-                        'yt-blue-hover': '#0550b5',
-                        'yt-border': '#e5e5e5',
-                        'yt-hover': '#f2f2f2',
-                        'yt-icon': '#030303',
+                        'yt-red': '#FF0000', 'yt-red-hover': '#CC0000',
+                        'yt-black': '#0f0f0f', 'yt-text': '#0f0f0f',
+                        'yt-text-secondary': '#606060', 'yt-text-light': '#909090',
+                        'yt-bg': '#f9f9f9', 'yt-chip-bg': '#f2f2f2',
+                        'yt-chip-active': '#0f0f0f', 'yt-chip-active-text': '#fff',
+                        'yt-blue': '#065fd4', 'yt-blue-hover': '#0550b5',
+                        'yt-border': '#e5e5e5', 'yt-hover': '#f2f2f2', 'yt-icon': '#030303',
                     }
                 }
             }
@@ -42,31 +34,41 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #909090; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #606060; }
-
         .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
         .sidebar-item:hover { background: #f2f2f2; }
         .sidebar-item.active { background: #f2f2f2; font-weight: 500; }
         .sidebar-item .icon-wrap { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
         .banner-container { width: 100%; max-height: 350px; overflow: hidden; position: relative; }
         .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
         .channel-tab { padding: 12px 16px; font-size: 14px; color: #606060; cursor: pointer; position: relative; white-space: nowrap; transition: color 0.15s; }
         .channel-tab:hover { color: #0f0f0f; }
         .channel-tab.active { color: #0f0f0f; font-weight: 500; }
         .channel-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #0f0f0f; border-radius: 3px 3px 0 0; }
-
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
         .toast.show { transform: translateX(-50%) translateY(0); }
-
         .desc-full { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
         .desc-full.expanded { max-height: 300px; opacity: 1; }
+        .song-card { cursor: pointer; transition: transform 0.1s; }
+        .song-card:hover .thumb-overlay { opacity: 1; }
+        .thumb-overlay { opacity: 0; transition: opacity 0.15s; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
+        .modal-backdrop.open { display: flex; }
+        .modal-content { background: #fff; border-radius: 12px; max-width: 800px; width: 100%; position: relative; animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .skeleton { background: #e5e5e5; border-radius: 8px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="font-roboto">
 
-    <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <!-- Modal -->
+    <div id="songModal" class="modal-backdrop" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content" id="modalBody"></div>
+    </div>
 
     <!-- Top Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-50 h-14 flex items-center justify-between px-4">
@@ -75,22 +77,20 @@
                 <i data-lucide="menu" class="w-6 h-6 text-yt-icon"></i>
             </button>
         </div>
-
         <div class="flex items-center flex-1 max-w-[640px] mx-4">
             <div class="flex flex-1 items-center">
                 <div class="flex flex-1 h-10 border border-yt-border rounded-l-full overflow-hidden focus-within:border-[#1c62b9] focus-within:shadow-inner">
-                    <input id="searchInput" type="text" placeholder="Cari" class="flex-1 h-full px-4 text-base outline-none bg-transparent text-yt-text placeholder:text-yt-text-light">
+                    <input id="searchInput" type="text" placeholder="Cari" class="flex-1 h-full px-4 text-base outline-none bg-transparent text-yt-text placeholder:text-yt-text-light" oninput="filterSongs(this.value)">
                 </div>
-                <button onclick="handleSearch()" class="h-10 w-16 bg-yt-chip-bg border border-l-0 border-yt-border rounded-r-full flex items-center justify-center hover:bg-[#e8e8e8] transition-colors">
+                <button class="h-10 w-16 bg-yt-chip-bg border border-l-0 border-yt-border rounded-r-full flex items-center justify-center hover:bg-[#e8e8e8] transition-colors">
                     <i data-lucide="search" class="w-5 h-5 text-yt-icon"></i>
                 </button>
             </div>
         </div>
-
         <div class="flex items-center">
-            <button onclick="showToast('Menu akun')">
+            <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank">
                 <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Profile" class="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity">
-            </button>
+            </a>
         </div>
     </header>
 
@@ -101,12 +101,11 @@
                 <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
                 <span class="text-sm">Beranda</span>
             </div>
-            <div class="sidebar-item" onclick="showToast('Populer Music')">
+            <div class="sidebar-item" onclick="window.open('SongLyrics/index.html','_self')">
                 <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
-                <span class="text-sm">Populer Music</span>
+                <span class="text-sm">Lirik Lagu</span>
             </div>
         </div>
-
         <div class="px-3 py-3">
             <p class="text-xs text-yt-text-light leading-5">Tentang Pers Siaran Kontak Creator Iklan Pengembang</p>
             <p class="text-xs text-yt-text-light leading-5 mt-2">Syarat Privasi Kebijakan & Keamanan</p>
@@ -114,30 +113,23 @@
         </div>
     </aside>
 
-    <!-- Sidebar Overlay (mobile) -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
 
     <!-- Main Content -->
     <main id="mainContent" class="ml-[240px] mt-14 transition-all duration-200">
-        
-        <!-- Banner -->
         <div class="banner-container">
             <img src="https://i.ibb.co.com/hRjNrgJH/5f9a0596-fadb-46cb-b5d3-6ce7fb603253.jpg" alt="Channel Banner">
         </div>
 
-        <!-- Channel Info -->
         <div class="bg-white px-6 pb-4">
             <div class="flex flex-col md:flex-row md:items-start gap-4 pt-4">
                 <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Lyric.o" class="w-[128px] h-[128px] rounded-full object-cover flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-                
                 <div class="flex-1 min-w-0">
                     <h1 class="text-xl font-normal text-yt-text tracking-tight">Lyric.o</h1>
                     <p class="text-sm text-yt-text-secondary mt-0.5">@LyricalD</p>
-                    <p class="text-sm text-yt-text-secondary mt-0.5">3 subscriber</p>
+                    <p class="text-sm text-yt-text-secondary mt-0.5" id="subscriberCount">3 subscriber</p>
                     <div class="mt-2">
-                        <p id="descShort" class="text-sm text-yt-text-secondary leading-5">
-                            Selamat datang di LyricoID....
-                        </p>
+                        <p id="descShort" class="text-sm text-yt-text-secondary leading-5">Selamat datang di LyricoID....</p>
                         <div id="descFull" class="desc-full">
                             <p class="text-sm text-yt-text-secondary leading-5 mt-1">
                                 Selamat datang di LyricoID.<br><br>
@@ -148,74 +140,166 @@
                         <button id="descToggle" onclick="toggleDesc()" class="text-sm font-medium text-yt-text-secondary hover:text-yt-text mt-1">selengkapnya</button>
                     </div>
                 </div>
-
                 <div class="flex items-center gap-2 flex-shrink-0 mt-2 md:mt-4">
-                    <button onclick="showToast('Berlangganan')" class="h-9 px-6 bg-yt-text text-white rounded-full text-sm font-medium hover:bg-[#272727] transition-colors flex items-center gap-2">
+                    <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="h-9 px-6 bg-yt-text text-white rounded-full text-sm font-medium hover:bg-[#272727] transition-colors flex items-center gap-2 no-underline">
                         <i data-lucide="bell" class="w-4 h-4"></i>
                         Berlangganan
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Channel Tabs -->
         <div class="bg-white border-b border-yt-border sticky top-14 z-20">
             <div class="flex overflow-x-auto px-6 no-scrollbar">
                 <div class="channel-tab active">Beranda</div>
             </div>
         </div>
 
-        <!-- Content Area -->
         <div class="p-6">
-            <div id="tab-home">
-                <h2 class="text-lg font-normal text-yt-text mb-6">Music</h2>
+            <h2 class="text-lg font-normal text-yt-text mb-6">Music</h2>
+            <div id="songGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+                <!-- Skeletons -->
+                <div><div class="skeleton w-full aspect-video mb-3"></div><div class="skeleton h-4 w-3/4 mb-2"></div><div class="skeleton h-3 w-1/2"></div></div>
+                <div><div class="skeleton w-full aspect-video mb-3"></div><div class="skeleton h-4 w-3/4 mb-2"></div><div class="skeleton h-3 w-1/2"></div></div>
+                <div><div class="skeleton w-full aspect-video mb-3"></div><div class="skeleton h-4 w-3/4 mb-2"></div><div class="skeleton h-3 w-1/2"></div></div>
+                <div><div class="skeleton w-full aspect-video mb-3"></div><div class="skeleton h-4 w-3/4 mb-2"></div><div class="skeleton h-3 w-1/2"></div></div>
+            </div>
+            <div id="emptyState" class="hidden text-center py-20">
+                <i data-lucide="music" class="w-16 h-16 text-yt-text-light mx-auto mb-4"></i>
+                <p class="text-yt-text-secondary text-lg">Belum ada lagu</p>
+                <p class="text-yt-text-light text-sm mt-1">Lagu akan muncul di sini setelah ditambahkan.</p>
             </div>
         </div>
     </main>
 
     <script>
+        // Firebase
+        firebase.initializeApp({
+            apiKey: "AIzaSyB5tXCot1h83ZePjiX3kVvYfO0bDs8teSs",
+            authDomain: "dwellidoki-cb4cd.firebaseapp.com",
+            projectId: "dwellidoki-cb4cd",
+            storageBucket: "dwellidoki-cb4cd.firebasestorage.app",
+            messagingSenderId: "677449362018",
+            appId: "1:677449362018:web:834f81d2f55c27b139ff3b",
+            measurementId: "G-MLGPGY8Y1G"
+        });
+        const db = firebase.firestore();
+        let allSongs = [];
+
         lucide.createIcons();
 
+        function getVideoId(url) {
+            if (!url) return null;
+            const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+            return m ? m[1] : null;
+        }
+
+        function renderSongs(songs) {
+            const grid = document.getElementById('songGrid');
+            const empty = document.getElementById('emptyState');
+            if (!songs.length) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+            empty.classList.add('hidden');
+            grid.innerHTML = songs.map((s, i) => `
+                <div class="song-card" onclick="openModal(${i})">
+                    <div class="relative rounded-xl overflow-hidden mb-3 bg-yt-chip-bg aspect-video">
+                        <img src="${s.imageUrl || 'https://picsum.photos/seed/song'+i+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/seed/fallback'+i+'/640/360'">
+                        <div class="thumb-overlay absolute inset-0 bg-black/10 flex items-center justify-center">
+                            <div class="w-12 h-12 bg-black/70 rounded-full flex items-center justify-center">
+                                <i data-lucide="play" class="w-6 h-6 text-white fill-white"></i>
+                            </div>
+                        </div>
+                        ${s.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">${s.duration}</span>` : ''}
+                    </div>
+                    <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function openModal(index) {
+            const s = allSongs[index];
+            const vid = getVideoId(s.youtubeLink);
+            const modal = document.getElementById('songModal');
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <button onclick="closeModal()" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover z-10 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6 text-yt-icon"></i>
+                </button>
+                ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` : 
+                `<div class="w-full aspect-video bg-yt-chip-bg"><img src="${s.imageUrl || ''}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-yt-text-light\\'>Tidak ada gambar</div>'"></div>`}
+                <div class="p-6">
+                    <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                        <div><span class="text-yt-text-light">Nama Musik</span><p class="text-yt-text mt-0.5">${s.title || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Durasi</span><p class="text-yt-text mt-0.5">${s.duration || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${s.releaseDate || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Tanggal Entri Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryDate || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Posisi Masuk Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryPosition || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Produsen</span><p class="text-yt-text mt-0.5">${s.producer || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Penulis Lagu</span><p class="text-yt-text mt-0.5">${s.songWriter || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Sumber</span><p class="text-yt-text mt-0.5">${s.source || '-'}</p></div>
+                        <div class="sm:col-span-2"><span class="text-yt-text-light">Link YouTube</span>
+                            ${s.youtubeLink ? `<a href="${s.youtubeLink}" target="_blank" class="text-yt-blue hover:text-yt-blue-hover mt-0.5 block truncate">${s.youtubeLink}</a>` : '<p class="text-yt-text mt-0.5">-</p>'}
+                        </div>
+                    </div>
+                    ${s.lyrics ? `<div class="mt-6"><span class="text-yt-text-light text-sm">Lirik</span><div class="mt-2 bg-yt-bg rounded-xl p-4 max-h-[300px] overflow-y-auto text-sm text-yt-text leading-relaxed whitespace-pre-line border border-yt-border">${s.lyrics}</div></div>` : ''}
+                </div>
+            `;
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('songModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function filterSongs(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) { renderSongs(allSongs); return; }
+            renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q)));
+        }
+
+        // Fetch songs
+        db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
+            allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderSongs(allSongs);
+        }).catch(err => {
+            console.error(err);
+            document.getElementById('songGrid').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-red-500">Gagal memuat data. Pastikan aturan Firestore mengizinkan pembacaan.</p></div>`;
+        });
+
+        // Sidebar
         let sidebarOpen = true;
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const main = document.getElementById('mainContent');
             const overlay = document.getElementById('sidebarOverlay');
-            
             if (window.innerWidth < 1312) {
                 sidebarOpen = !sidebarOpen;
-                if (sidebarOpen) {
-                    sidebar.style.transform = 'translateX(0)';
-                    overlay.classList.remove('hidden');
-                } else {
-                    sidebar.style.transform = 'translateX(-100%)';
-                    overlay.classList.add('hidden');
-                }
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                overlay.classList.toggle('hidden', !sidebarOpen);
             } else {
                 sidebarOpen = !sidebarOpen;
-                if (sidebarOpen) {
-                    sidebar.style.transform = 'translateX(0)';
-                    main.style.marginLeft = '240px';
-                    sidebar.style.width = '240px';
-                } else {
-                    sidebar.style.transform = 'translateX(-100%)';
-                    main.style.marginLeft = '0';
-                }
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                main.style.marginLeft = sidebarOpen ? '240px' : '0';
             }
         }
-
         document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
 
         function handleResize() {
             const sidebar = document.getElementById('sidebar');
             const main = document.getElementById('mainContent');
             const overlay = document.getElementById('sidebarOverlay');
-            
             if (window.innerWidth < 1312) {
-                if (sidebarOpen) {
-                    sidebar.style.transform = 'translateX(-100%)';
-                    sidebarOpen = false;
-                }
+                sidebar.style.transform = 'translateX(-100%)';
+                sidebarOpen = false;
                 main.style.marginLeft = '0';
             } else {
                 sidebar.style.transform = 'translateX(0)';
@@ -225,7 +309,6 @@
                 overlay.classList.add('hidden');
             }
         }
-
         window.addEventListener('resize', handleResize);
         handleResize();
 
@@ -242,24 +325,9 @@
             } else {
                 descFull.classList.remove('expanded');
                 toggle.textContent = 'selengkapnya';
-                setTimeout(() => {
-                    if (!descExpanded) descShort.style.display = 'block';
-                }, 400);
+                setTimeout(() => { if (!descExpanded) descShort.style.display = 'block'; }, 400);
             }
         }
-
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (query) {
-                showToast('Mencari: ' + query);
-            } else {
-                showToast('Masukkan kata kunci pencarian');
-            }
-        }
-
-        document.getElementById('searchInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') handleSearch();
-        });
 
         let toastTimeout;
         function showToast(message) {
@@ -267,10 +335,10 @@
             toast.textContent = message;
             toast.classList.add('show');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2000);
         }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
     </script>
 </body>
 </html>
