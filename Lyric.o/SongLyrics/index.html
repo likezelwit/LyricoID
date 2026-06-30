@@ -60,7 +60,7 @@
     <header class="bg-white/80 backdrop-blur-sm border-b border-lyric-border sticky top-0 z-50">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="../index.html" class="flex items-center gap-2 text-lyric-text no-underline hover:opacity-70 transition-opacity">
+                <a href="../../index.html" class="flex items-center gap-2 text-lyric-text no-underline hover:opacity-70 transition-opacity">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     <span class="font-medium text-sm hidden sm:inline">Kembali</span>
                 </a>
@@ -193,8 +193,10 @@
             if (activeIndex >= 0) {
                 const prevPanel = document.getElementById('detail-' + activeIndex);
                 const prevItem = document.getElementById('item-' + activeIndex);
+                const prevChevron = document.getElementById('chevron-' + activeIndex);
                 if (prevPanel) prevPanel.classList.remove('open');
                 if (prevItem) prevItem.classList.remove('active');
+                if (prevChevron) prevChevron.style.transform = 'rotate(0deg)';
                 activeIndex = -1;
             }
 
@@ -348,7 +350,9 @@
         // Handle back/forward
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.songIndex !== undefined) {
-                toggleSong(e.state.songIndex);
+                // Re-render list first to get fresh DOM elements
+                renderSongList(filteredSongs);
+                setTimeout(() => { toggleSong(e.state.songIndex); }, 50);
             } else {
                 if (activeIndex >= 0) {
                     const panel = document.getElementById('detail-' + activeIndex);
@@ -362,11 +366,26 @@
             }
         });
 
+        // Parse URL on direct visit and auto-open song
+        function initFromUrl() {
+            const path = window.location.pathname;
+            // Match: /Lyric.o/SongLyrics/name-slug/writer-slug/code
+            const match = path.match(/\/Lyric\.o\/SongLyrics\/([^/]+)\/([^/]+)\/([^/]+)/);
+            if (match) {
+                const code = match[3];
+                const idx = allSongs.findIndex(s => s.id === code);
+                if (idx >= 0) {
+                    setTimeout(() => { toggleSong(idx); }, 200);
+                }
+            }
+        }
+
         // Fetch songs
         db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
             allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             filteredSongs = [...allSongs];
             renderSongList(filteredSongs);
+            initFromUrl();
         }).catch(err => {
             console.error(err);
             document.getElementById('songList').innerHTML = `<div class="text-center py-10"><p class="text-red-400 text-sm">Gagal memuat data.</p></div>`;
