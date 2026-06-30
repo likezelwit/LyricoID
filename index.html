@@ -59,6 +59,7 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .cs-badge { position: absolute; top: 8px; left: 8px; background: #f9a825; color: #000; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; z-index: 2; }
     </style>
 </head>
 <body class="font-roboto">
@@ -101,11 +102,11 @@
                 <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
                 <span class="text-sm">Beranda</span>
             </div>
-            <div class="sidebar-item" onclick="window.open('SongLyrics/index.html','_self')">
+            <div class="sidebar-item" onclick="window.open('Lyric.o/SongLyrics/index.html','_self')">
                 <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
                 <span class="text-sm">Lirik Lagu</span>
             </div>
-            <div class="sidebar-item" onclick="showToast('UPcoming')">
+            <div class="sidebar-item" onclick="scrollToComingSoon()">
                 <span class="icon-wrap"><i data-lucide="clock" class="w-6 h-6"></i></span>
                 <span class="text-sm">UPcoming</span>
             </div>
@@ -171,6 +172,19 @@
                 <p class="text-yt-text-secondary text-lg">Belum ada lagu</p>
                 <p class="text-yt-text-light text-sm mt-1">Lagu akan muncul di sini setelah ditambahkan.</p>
             </div>
+
+            <!-- Coming Soon Section -->
+            <div id="csSection" class="mt-12 hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <h2 class="text-lg font-normal text-yt-text">UPcoming</h2>
+                    <span class="text-xs font-medium bg-[#f9a825] text-black px-2 py-0.5 rounded">Coming Soon</span>
+                </div>
+                <div id="csGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8"></div>
+                <div id="csEmptyState" class="hidden text-center py-12">
+                    <i data-lucide="clock" class="w-12 h-12 text-yt-text-light mx-auto mb-3"></i>
+                    <p class="text-yt-text-secondary text-sm">Belum ada lagu upcoming</p>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -186,6 +200,7 @@
         });
         const db = firebase.firestore();
         let allSongs = [];
+        let allComingSoon = [];
 
         lucide.createIcons();
 
@@ -211,7 +226,7 @@
             const nameSlug = slugify(song.title);
             const writerSlug = slugify(song.songWriter);
             const code = song.id || Math.random().toString(36).substring(2, 10);
-            return 'https://lyricoid.work.gd/Lyric.o/SongLyrics/' + nameSlug + '/' + writerSlug + '/' + code;
+            return '/Lyric.o/SongLyrics/' + nameSlug + '/' + writerSlug + '/' + code;
         }
 
         function renderSongs(songs) {
@@ -224,10 +239,12 @@
                 return;
             }
             empty.classList.add('hidden');
-            grid.innerHTML = songs.map((s, i) => `
-                <div class="song-card" onclick="openModal(${i})">
+            grid.innerHTML = songs.map((s, i) => {
+                const realIndex = allSongs.indexOf(s);
+                return `
+                <div class="song-card" onclick="openModal(${realIndex})">
                     <div class="relative rounded-xl overflow-hidden mb-3 bg-yt-chip-bg aspect-video">
-                        <img src="${s.imageUrl || 'https://picsum.photos/seed/song'+i+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/seed/fallback'+i+'/640/360'">
+                        <img src="${s.imageUrl || 'https://picsum.photos/seed/song'+realIndex+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/seed/fallback'+realIndex+'/640/360'">
                         <div class="thumb-overlay absolute inset-0 bg-black/10 flex items-center justify-center">
                             <div class="w-12 h-12 bg-black/70 rounded-full flex items-center justify-center">
                                 <i data-lucide="play" class="w-6 h-6 text-white fill-white"></i>
@@ -237,7 +254,41 @@
                     </div>
                     <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
                 </div>
-            `).join('');
+            `}).join('');
+            lucide.createIcons();
+        }
+
+        function renderComingSoon(songs) {
+            const section = document.getElementById('csSection');
+            const grid = document.getElementById('csGrid');
+            const empty = document.getElementById('csEmptyState');
+
+            if (!songs.length) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            grid.innerHTML = songs.map((s, i) => {
+                const realIndex = allComingSoon.indexOf(s);
+                return `
+                <div class="song-card" onclick="openCSModal(${realIndex})">
+                    <div class="relative rounded-xl overflow-hidden mb-3 bg-yt-chip-bg aspect-video">
+                        <img src="${s.imageUrl || 'https://picsum.photos/seed/cs'+realIndex+'/640/360'}" alt="${s.title}" class="w-full h-full object-cover" style="filter: brightness(0.65);" onerror="this.src='https://picsum.photos/seed/csfallback'+realIndex+'/640/360'; this.style.filter='brightness(0.65)';">
+                        <span class="cs-badge">Coming Soon</span>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                            </div>
+                        </div>
+                        ${s.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">${s.duration}</span>` : ''}
+                    </div>
+                    <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
+                    ${s.songWriter ? `<p class="text-xs text-yt-text-secondary mt-1 line-clamp-1">${s.songWriter}</p>` : ''}
+                </div>
+            `}).join('');
             lucide.createIcons();
         }
 
@@ -247,7 +298,6 @@
             const lyricUrl = generateLyricUrl(s);
             const songUrl = generateSongUrl(s);
 
-            // Ubah URL di address bar
             history.pushState({ songIndex: index }, '', songUrl);
 
             const modal = document.getElementById('songModal');
@@ -256,7 +306,7 @@
                 <button onclick="closeModal()" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover z-10 transition-colors">
                     <i data-lucide="x" class="w-6 h-6 text-yt-icon"></i>
                 </button>
-                ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` : 
+                ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` :
                 `<div class="w-full aspect-video bg-yt-chip-bg"><img src="${s.imageUrl || ''}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-yt-text-light\\'>Tidak ada gambar</div>'"></div>`}
                 <div class="p-6">
                     <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
@@ -275,6 +325,41 @@
                             <i data-lucide="file-text" class="w-4 h-4"></i>
                             Dapatkan Lirik
                         </a>
+                    </div>
+                </div>
+            `;
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function openCSModal(index) {
+            const s = allComingSoon[index];
+            const modal = document.getElementById('songModal');
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <button onclick="closeModal()" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover z-10 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6 text-yt-icon"></i>
+                </button>
+                <div class="w-full aspect-video bg-yt-chip-bg relative">
+                    <img src="${s.imageUrl || 'https://picsum.photos/seed/csdetail/640/360'}" alt="${s.title}" class="w-full h-full object-cover" style="filter: brightness(0.6);" onerror="this.src='https://picsum.photos/seed/csdetailfb/640/360'; this.style.filter='brightness(0.6)';">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="bg-[#f9a825] text-black text-sm font-medium px-6 py-2.5 rounded-full">Coming Soon</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                        <div><span class="text-yt-text-light">Nama Musik</span><p class="text-yt-text mt-0.5">${s.title || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Durasi</span><p class="text-yt-text mt-0.5">${s.duration || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${s.releaseDate || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Produsen</span><p class="text-yt-text mt-0.5">${s.producer || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Penulis Lagu</span><p class="text-yt-text mt-0.5">${s.songWriter || '-'}</p></div>
+                        <div><span class="text-yt-text-light">Sumber</span><p class="text-yt-text mt-0.5">${s.source || '-'}</p></div>
+                    </div>
+                    <div class="mt-6 text-center py-4 bg-yt-bg rounded-xl">
+                        <i data-lucide="clock" class="w-5 h-5 text-[#f9a825] mx-auto mb-2"></i>
+                        <p class="text-sm text-yt-text-secondary">Lagu ini segera hadir. Nantikan ya!</p>
                     </div>
                 </div>
             `;
@@ -304,14 +389,47 @@
             renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q)));
         }
 
-        // Fetch songs
+        // Parse URL on direct visit and auto-open song
+        function initFromUrl() {
+            const path = window.location.pathname;
+            // Match: /name-slug/writer-slug/code
+            const match = path.match(/\/([^/]+)\/([^/]+)\/([^/]+)/);
+            if (match) {
+                const code = match[3];
+                const idx = allSongs.findIndex(s => s.id === code);
+                if (idx >= 0) {
+                    openModal(idx);
+                }
+            }
+        }
+
+        // Fetch songs (published)
         db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
             allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderSongs(allSongs);
+            initFromUrl();
         }).catch(err => {
             console.error(err);
             document.getElementById('songGrid').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-red-500">Gagal memuat data. Pastikan aturan Firestore mengizinkan pembacaan.</p></div>`;
         });
+
+        // Fetch coming soon songs
+        db.collection('coming_soon').orderBy('createdAt', 'desc').get().then(snap => {
+            allComingSoon = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderComingSoon(allComingSoon);
+        }).catch(err => {
+            console.error('Coming soon fetch error:', err);
+        });
+
+        // Scroll to Coming Soon section
+        function scrollToComingSoon() {
+            const section = document.getElementById('csSection');
+            if (section && !section.classList.contains('hidden')) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showToast('Belum ada lagu upcoming');
+            }
+        }
 
         // Sidebar
         let sidebarOpen = true;
