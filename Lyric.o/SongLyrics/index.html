@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyric.o - Song Lyrics</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -134,16 +135,9 @@
 
         lucide.createIcons();
 
-        function slugify(text) {
-            if (!text) return 'unknown';
-            return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/[\s]+/g, '-').replace(/(^-|-$)/g, '');
-        }
-
+        // ★ FIX: Gunakan query parameter
         function generateSongUrl(song) {
-            const nameSlug = slugify(song.title);
-            const writerSlug = slugify(song.songWriter);
-            const code = song.id || Math.random().toString(36).substring(2, 10);
-            return '/Lyric.o/SongLyrics/' + nameSlug + '/' + writerSlug + '/' + code;
+            return '?song=' + (song.id || '');
         }
 
         function formatDate(d) {
@@ -191,12 +185,7 @@
 
             // Close active panel if filtering
             if (activeIndex >= 0) {
-                const prevPanel = document.getElementById('detail-' + activeIndex);
-                const prevItem = document.getElementById('item-' + activeIndex);
-                const prevChevron = document.getElementById('chevron-' + activeIndex);
-                if (prevPanel) prevPanel.classList.remove('open');
-                if (prevItem) prevItem.classList.remove('active');
-                if (prevChevron) prevChevron.style.transform = 'rotate(0deg)';
+                closeActivePanel();
                 activeIndex = -1;
             }
 
@@ -210,6 +199,15 @@
             }
 
             renderSongList(filteredSongs);
+        }
+
+        function closeActivePanel() {
+            const prevPanel = document.getElementById('detail-' + activeIndex);
+            const prevItem = document.getElementById('item-' + activeIndex);
+            const prevChevron = document.getElementById('chevron-' + activeIndex);
+            if (prevPanel) prevPanel.classList.remove('open');
+            if (prevItem) prevItem.classList.remove('active');
+            if (prevChevron) prevChevron.style.transform = 'rotate(0deg)';
         }
 
         function renderSongList(songs) {
@@ -311,18 +309,14 @@
                 item.classList.remove('active');
                 if (chevron) chevron.style.transform = 'rotate(0deg)';
                 activeIndex = -1;
+                // ★ FIX: Kembali ke URL bersih
                 history.pushState({}, '', window.location.pathname);
                 return;
             }
 
             // Close previous
             if (activeIndex >= 0) {
-                const prevPanel = document.getElementById('detail-' + activeIndex);
-                const prevItem = document.getElementById('item-' + activeIndex);
-                const prevChevron = document.getElementById('chevron-' + activeIndex);
-                if (prevPanel) prevPanel.classList.remove('open');
-                if (prevItem) prevItem.classList.remove('active');
-                if (prevChevron) prevChevron.style.transform = 'rotate(0deg)';
+                closeActivePanel();
             }
 
             // Open new
@@ -334,7 +328,7 @@
             if (chevron) chevron.style.transform = 'rotate(180deg)';
             activeIndex = index;
 
-            // Change URL
+            // ★ FIX: Pakai query parameter
             const song = allSongs[index];
             const newUrl = generateSongUrl(song);
             history.pushState({ songIndex: index }, '', newUrl);
@@ -347,33 +341,27 @@
             }, 100);
         }
 
-        // Handle back/forward
+        // ★ FIX: Handle popstate tanpa double pushState
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.songIndex !== undefined) {
-                // Re-render list first to get fresh DOM elements
+                // Re-render list dulu agar DOM segar
                 renderSongList(filteredSongs);
                 setTimeout(() => { toggleSong(e.state.songIndex); }, 50);
             } else {
+                // Tutup panel tanpa pushState
                 if (activeIndex >= 0) {
-                    const panel = document.getElementById('detail-' + activeIndex);
-                    const item = document.getElementById('item-' + activeIndex);
-                    const chevron = document.getElementById('chevron-' + activeIndex);
-                    if (panel) panel.classList.remove('open');
-                    if (item) item.classList.remove('active');
-                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                    closeActivePanel();
                     activeIndex = -1;
                 }
             }
         });
 
-        // Parse URL on direct visit and auto-open song
+        // ★ FIX: Baca dari query parameter, bukan path
         function initFromUrl() {
-            const path = window.location.pathname;
-            // Match: /Lyric.o/SongLyrics/name-slug/writer-slug/code
-            const match = path.match(/\/Lyric\.o\/SongLyrics\/([^/]+)\/([^/]+)\/([^/]+)/);
-            if (match) {
-                const code = match[3];
-                const idx = allSongs.findIndex(s => s.id === code);
+            const params = new URLSearchParams(window.location.search);
+            const songId = params.get('song');
+            if (songId) {
+                const idx = allSongs.findIndex(s => s.id === songId);
                 if (idx >= 0) {
                     setTimeout(() => { toggleSong(idx); }, 200);
                 }
