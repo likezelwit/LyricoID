@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyric.o - YouTube</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -173,14 +174,14 @@
                 <p class="text-yt-text-light text-sm mt-1">Lagu akan muncul di sini setelah ditambahkan.</p>
             </div>
 
-            <!-- Coming Soon Section -->
-            <div id="csSection" class="mt-12 hidden">
+            <!-- Coming Soon Section — selalu tampil di Beranda -->
+            <div id="csSection" class="mt-12">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-lg font-normal text-yt-text">UPcoming</h2>
                     <span class="text-xs font-medium bg-[#f9a825] text-black px-2 py-0.5 rounded">Coming Soon</span>
                 </div>
                 <div id="csGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8"></div>
-                <div id="csEmptyState" class="hidden text-center py-12">
+                <div id="csEmptyState" class="text-center py-12">
                     <i data-lucide="clock" class="w-12 h-12 text-yt-text-light mx-auto mb-3"></i>
                     <p class="text-yt-text-secondary text-sm">Belum ada lagu upcoming</p>
                 </div>
@@ -204,29 +205,19 @@
 
         lucide.createIcons();
 
-        function slugify(text) {
-            if (!text) return 'unknown';
-            return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/[\s]+/g, '-').replace(/(^-|-$)/g, '');
-        }
-
         function getVideoId(url) {
             if (!url) return null;
             const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
             return m ? m[1] : null;
         }
 
+        // ★ FIX: Gunakan query parameter agar URL bisa di-paste tanpa 404
         function generateSongUrl(song) {
-            const nameSlug = slugify(song.title);
-            const writerSlug = slugify(song.songWriter);
-            const code = song.id || Math.random().toString(36).substring(2, 10);
-            return '/' + nameSlug + '/' + writerSlug + '/' + code;
+            return '?song=' + (song.id || '');
         }
 
         function generateLyricUrl(song) {
-            const nameSlug = slugify(song.title);
-            const writerSlug = slugify(song.songWriter);
-            const code = song.id || Math.random().toString(36).substring(2, 10);
-            return '/Lyric.o/SongLyrics/' + nameSlug + '/' + writerSlug + '/' + code;
+            return 'Lyric.o/SongLyrics/index.html?song=' + (song.id || '');
         }
 
         function renderSongs(songs) {
@@ -263,14 +254,17 @@
             const grid = document.getElementById('csGrid');
             const empty = document.getElementById('csEmptyState');
 
+            // ★ FIX: Selalu tampilkan section, tidak pernah di-hide
+            section.classList.remove('hidden');
+
             if (!songs.length) {
-                section.classList.add('hidden');
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                lucide.createIcons();
                 return;
             }
 
-            section.classList.remove('hidden');
             empty.classList.add('hidden');
-
             grid.innerHTML = songs.map((s, i) => {
                 const realIndex = allComingSoon.indexOf(s);
                 return `
@@ -294,10 +288,12 @@
 
         function openModal(index) {
             const s = allSongs[index];
+            if (!s) return;
             const vid = getVideoId(s.youtubeLink);
             const lyricUrl = generateLyricUrl(s);
             const songUrl = generateSongUrl(s);
 
+            // ★ FIX: Pakai query parameter, bukan path
             history.pushState({ songIndex: index }, '', songUrl);
 
             const modal = document.getElementById('songModal');
@@ -335,6 +331,7 @@
 
         function openCSModal(index) {
             const s = allComingSoon[index];
+            if (!s) return;
             const modal = document.getElementById('songModal');
             const body = document.getElementById('modalBody');
             body.innerHTML = `
@@ -368,18 +365,23 @@
             lucide.createIcons();
         }
 
-        function closeModal() {
-            document.getElementById('songModal').classList.remove('open');
+        // ★ FIX: Tambah parameter skipPushState agar tidak double push saat popstate
+        function closeModal(skipPushState) {
+            const modal = document.getElementById('songModal');
+            if (!modal.classList.contains('open')) return;
+            modal.classList.remove('open');
             document.body.style.overflow = '';
-            history.pushState({}, '', window.location.pathname);
+            if (!skipPushState) {
+                history.pushState({}, '', window.location.pathname);
+            }
         }
 
-        // Handle back/forward browser buttons
+        // ★ FIX: Gunakan skipPushState saat popstate menutup modal
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.songIndex !== undefined) {
                 openModal(e.state.songIndex);
             } else {
-                closeModal();
+                closeModal(true);
             }
         });
 
@@ -389,14 +391,12 @@
             renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q)));
         }
 
-        // Parse URL on direct visit and auto-open song
+        // ★ FIX: Baca dari query parameter, bukan dari path
         function initFromUrl() {
-            const path = window.location.pathname;
-            // Match: /name-slug/writer-slug/code
-            const match = path.match(/\/([^/]+)\/([^/]+)\/([^/]+)/);
-            if (match) {
-                const code = match[3];
-                const idx = allSongs.findIndex(s => s.id === code);
+            const params = new URLSearchParams(window.location.search);
+            const songId = params.get('song');
+            if (songId) {
+                const idx = allSongs.findIndex(s => s.id === songId);
                 if (idx >= 0) {
                     openModal(idx);
                 }
@@ -419,15 +419,20 @@
             renderComingSoon(allComingSoon);
         }).catch(err => {
             console.error('Coming soon fetch error:', err);
+            // ★ FIX: Tampilkan pesan error di section jika fetch gagal
+            document.getElementById('csEmptyState').innerHTML = `
+                <i data-lucide="alert-circle" class="w-12 h-12 text-red-300 mx-auto mb-3"></i>
+                <p class="text-red-400 text-sm">Gagal memuat data upcoming</p>
+            `;
+            document.getElementById('csEmptyState').classList.remove('hidden');
+            lucide.createIcons();
         });
 
-        // Scroll to Coming Soon section
+        // ★ FIX: Selalu scroll ke section, karena section selalu visible
         function scrollToComingSoon() {
             const section = document.getElementById('csSection');
-            if (section && !section.classList.contains('hidden')) {
+            if (section) {
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                showToast('Belum ada lagu upcoming');
             }
         }
 
