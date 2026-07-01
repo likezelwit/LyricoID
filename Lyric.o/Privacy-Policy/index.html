@@ -4,625 +4,662 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - Lyric.o</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'roboto': ['Roboto', 'sans-serif'] },
+                    colors: {
+                        'yt-red': '#FF0000', 'yt-red-hover': '#CC0000',
+                        'yt-black': '#0f0f0f', 'yt-text': '#0f0f0f',
+                        'yt-text-secondary': '#606060', 'yt-text-light': '#909090',
+                        'yt-bg': '#f9f9f9', 'yt-chip-bg': '#f2f2f2',
+                        'yt-chip-active': '#0f0f0f', 'yt-chip-active-text': '#fff',
+                        'yt-blue': '#065fd4', 'yt-blue-hover': '#0550b5',
+                        'yt-border': '#e5e5e5', 'yt-hover': '#f2f2f2', 'yt-icon': '#030303',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: #f9f9f9; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #909090; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #606060; }
+        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+        .sidebar-item:hover { background: #f2f2f2; }
+        .sidebar-item.active { background: #f2f2f2; font-weight: 500; }
+        .sidebar-item .icon-wrap { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #09090b;
-            color: #ffffff;
-            line-height: 1.7;
-            padding: 20px;
-        }
+        .pp-content h1 { font-size: 1.75rem; font-weight: 500; color: #0f0f0f; margin-bottom: 4px; letter-spacing: -0.01em; }
+        .pp-content .last-updated { color: #909090; font-size: 13px; margin-bottom: 24px; }
+        .pp-content .intro-text { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+        .pp-content h2 { font-size: 1.25rem; font-weight: 500; color: #0f0f0f; margin-top: 36px; margin-bottom: 14px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
+        .pp-content h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .pp-content h3 { font-size: 1.05rem; font-weight: 500; color: #0f0f0f; margin-top: 24px; margin-bottom: 10px; }
+        .pp-content h4 { font-size: 0.9375rem; font-weight: 500; color: #0f0f0f; margin-top: 18px; margin-bottom: 8px; }
+        .pp-content p { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+        .pp-content ul, .pp-content ol { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 14px; padding-left: 24px; }
+        .pp-content li { margin-bottom: 8px; }
+        .pp-content li p { margin-bottom: 4px; }
+        .pp-content strong { color: #0f0f0f; font-weight: 500; }
+        .pp-content a { color: #065fd4; text-decoration: none; }
+        .pp-content a:hover { text-decoration: underline; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.03), transparent);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 40px 50px;
-        }
+        .cookie-list { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px 20px; margin: 12px 0 16px; list-style: none; padding-left: 0; }
+        .cookie-list > li { padding: 12px 0; border-bottom: 1px solid #e5e5e5; }
+        .cookie-list > li:last-child { border-bottom: none; padding-bottom: 0; }
+        .cookie-list > li:first-child { padding-top: 0; }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-            margin-bottom: 8px;
-            background: linear-gradient(to right, #a5b4fc, #ffffff, #a1a1aa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .copyright-notice { background: #f0f4ff; border: 1px solid #c7d7fe; border-radius: 12px; padding: 20px; margin: 16px 0; }
+        .copyright-notice h3 { color: #1e40af; margin-top: 0; }
+        .copyright-notice p, .copyright-notice li { color: #3b5998; }
 
-        .last-updated {
-            color: #71717a;
-            font-size: 0.875rem;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
+        .rights-list { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin: 12px 0; list-style: none; padding-left: 0; }
+        .rights-list li strong { color: #065fd4; }
 
-        .intro-text {
-            color: #a1a1aa;
-            font-size: 0.95rem;
-            margin-bottom: 40px;
-        }
+        .warning-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px 20px; margin: 16px 0; }
+        .warning-box p { color: #92400e; margin-bottom: 0; }
 
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-            margin-top: 48px;
-            margin-bottom: 20px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
+        .dmca-steps { counter-reset: dmca; list-style: none; padding-left: 0; }
+        .dmca-steps li { counter-increment: dmca; position: relative; padding-left: 36px; margin-bottom: 10px; }
+        .dmca-steps li::before { content: counter(dmca); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #0f0f0f; }
 
-        h2:first-of-type {
-            border-top: none;
-            padding-top: 0;
-        }
+        .third-party-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 14px 0; }
+        .third-party-card { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px; }
+        .third-party-card h4 { color: #0f0f0f; margin-top: 0; margin-bottom: 6px; font-size: 14px; }
+        .third-party-card p { font-size: 13px; margin-bottom: 6px; }
 
-        h3 {
-            font-size: 1.15rem;
-            font-weight: 500;
-            color: #e4e4e7;
-            margin-top: 28px;
-            margin-bottom: 14px;
-        }
+        .contact-box { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin-top: 12px; }
+        .contact-box ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+        .contact-box li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .contact-box li:last-child { margin-bottom: 0; }
+        .contact-icon { width: 36px; height: 36px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .contact-icon svg { width: 18px; height: 18px; stroke: #606060; fill: none; stroke-width: 2; }
 
-        h4 {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #d4d4d8;
-            margin-top: 22px;
-            margin-bottom: 10px;
-        }
+        .retention-table { width: 100%; border-collapse: collapse; margin: 12px 0; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; }
+        .retention-table th, .retention-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e5e5e5; font-size: 13px; }
+        .retention-table th { color: #0f0f0f; font-weight: 500; background: #f2f2f2; }
+        .retention-table td { color: #606060; }
+        .retention-table tr:last-child td { border-bottom: none; }
 
-        p {
-            color: #a1a1aa;
-            font-size: 0.925rem;
-            margin-bottom: 14px;
-        }
+        .toc-nav { position: sticky; top: 70px; max-height: calc(100vh - 90px); overflow-y: auto; }
+        .toc-nav::-webkit-scrollbar { width: 4px; }
+        .toc-nav::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .toc-link { display: block; padding: 6px 12px; font-size: 13px; color: #606060; border-left: 2px solid transparent; transition: all 0.15s; text-decoration: none; border-radius: 0 4px 4px 0; line-height: 1.4; }
+        .toc-link:hover { color: #0f0f0f; background: #f2f2f2; }
+        .toc-link.active { color: #065fd4; border-left-color: #065fd4; background: #f0f4ff; font-weight: 500; }
 
-        ul, ol {
-            color: #a1a1aa;
-            font-size: 0.925rem;
-            margin-bottom: 16px;
-            padding-left: 24px;
-        }
-
-        li {
-            margin-bottom: 10px;
-        }
-
-        li p {
-            margin-bottom: 6px;
-        }
-
-        strong {
-            color: #d4d4d8;
-            font-weight: 500;
-        }
-
-        a {
-            color: #818cf8;
-            text-decoration: none;
-            transition: color 150ms ease;
-        }
-
-        a:hover {
-            color: #a5b4fc;
-        }
-
-        .cookie-list {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin: 16px 0;
-        }
-
-        .cookie-list > li {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .cookie-list > li:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .cookie-list > li:first-child {
-            padding-top: 0;
-        }
-
-        .copyright-notice {
-            background: rgba(99, 102, 241, 0.08);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 20px 0;
-        }
-
-        .copyright-notice h3 {
-            color: #a5b4fc;
-            margin-top: 0;
-        }
-
-        .copyright-notice p,
-        .copyright-notice li {
-            color: #c7d2fe;
-        }
-
-        .rights-list {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 16px 0;
-        }
-
-        .rights-list li strong {
-            color: #a5b4fc;
-        }
-
-        .warning-box {
-            background: rgba(251, 191, 36, 0.08);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin: 20px 0;
-        }
-
-        .warning-box p {
-            color: #fde68a;
-        }
-
-        .dmca-steps {
-            counter-reset: dmca;
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .dmca-steps li {
-            counter-increment: dmca;
-            position: relative;
-            padding-left: 36px;
-            margin-bottom: 12px;
-        }
-
-        .dmca-steps li::before {
-            content: counter(dmca);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 24px;
-            height: 24px;
-            background: rgba(99, 102, 241, 0.2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #a5b4fc;
-        }
-
-        .third-party-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin: 20px 0;
-        }
-
-        .third-party-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .third-party-card h4 {
-            color: #e4e4e7;
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-
-        .third-party-card p {
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-        }
-
-        .contact-box {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 24px;
-            margin-top: 16px;
-        }
-
-        .contact-box ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .contact-box li {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .contact-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(99, 102, 241, 0.15);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .contact-icon svg {
-            width: 16px;
-            height: 16px;
-            stroke: #a5b4fc;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .retention-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-        }
-
-        .retention-table th,
-        .retention-table td {
-            text-align: left;
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            font-size: 0.875rem;
-        }
-
-        .retention-table th {
-            color: #d4d4d8;
-            font-weight: 500;
-            background: rgba(255,255,255,0.02);
-        }
-
-        .retention-table td {
-            color: #a1a1aa;
-        }
-
-        .footer-note {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            color: #52525b;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 24px 20px;
-                border-radius: 16px;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            h2 {
-                font-size: 1.25rem;
-            }
-
-            .third-party-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 1023px) {
+            .toc-sidebar { display: none !important; }
         }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Privacy Policy</h1>
-        <p class="last-updated">Last updated: July 01, 2026</p>
+<body class="font-roboto">
 
-        <p class="intro-text">This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
+    <div id="toast" class="toast"></div>
 
-        <p class="intro-text">We use Your Personal Data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
-
-        <h2>Interpretation and Definitions</h2>
-
-        <h3>Interpretation</h3>
-        <p>The words whose initial letters are capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
-
-        <h3>Definitions</h3>
-        <p>For the purposes of this Privacy Policy:</p>
-        <ul>
-            <li><strong>Affiliate</strong> means an entity that controls, is controlled by, or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</li>
-            <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Privacy Policy) refers to Lyric.o.</li>
-            <li><strong>Cookies</strong> are small files that are placed on Your computer, mobile device or any other device by a website, containing the details of Your browsing history on that website among its many uses.</li>
-            <li><strong>Country</strong> refers to: Indonesia.</li>
-            <li><strong>Device</strong> means any device that can access the Service such as a computer, a cell phone or a digital tablet.</li>
-            <li><strong>Personal Data</strong> (or "Personal Information") is any information that relates to an identified or identifiable individual. We use "Personal Data" and "Personal Information" interchangeably unless a law uses a specific term.</li>
-            <li><strong>Service</strong> refers to the Website.</li>
-            <li><strong>Service Provider</strong> means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.</li>
-            <li><strong>Usage Data</strong> refers to data collected automatically, either generated by the use of the Service or from the Service infrastructure itself (for example, the duration of a page visit).</li>
-            <li><strong>Website</strong> refers to Lyric.o, accessible from <a href="https://lyricoid.work.gd/" rel="external nofollow noopener" target="_blank">https://lyricoid.work.gd/</a>.</li>
-            <li><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
-        </ul>
-
-        <h2>Collecting and Using Your Personal Data</h2>
-
-        <h3>Types of Data Collected</h3>
-
-        <h4>Usage Data</h4>
-        <p>Usage Data is collected automatically when using the Service.</p>
-        <p>Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p>
-        <p>When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device's unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.</p>
-        <p>We may also collect information that Your browser sends whenever You visit Our Service or when You access the Service by or through a mobile device.</p>
-
-        <h4>Tracking Technologies and Cookies</h4>
-        <p>We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies We use include beacons, tags, and scripts to collect and track information and to improve and analyze Our Service. The technologies We use may include:</p>
-        <ul>
-            <li><strong>Cookies or Browser Cookies.</strong> A cookie is a small file placed on Your Device. You can instruct Your browser to refuse all Cookies or to indicate when a Cookie is being sent. However, if You do not accept Cookies, You may not be able to use some parts of our Service.</li>
-            <li><strong>Web Beacons.</strong> Certain sections of our Service and our emails may contain small electronic files known as web beacons (also referred to as clear gifs, pixel tags, and single-pixel gifs) that permit the Company, for example, to count users who have visited those pages or opened an email and for other related website statistics (for example, recording the popularity of a certain section and verifying system and server integrity).</li>
-        </ul>
-        <p>Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on Your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close Your web browser.</p>
-        <p>Where required by law, we use non-essential cookies only with Your consent. You can withdraw or change Your consent at any time using Our cookie preferences tool (if available) or through Your browser/device settings. Withdrawing consent does not affect the lawfulness of processing based on consent before its withdrawal.</p>
-
-        <p>We use both Session and Persistent Cookies for the purposes set out below:</p>
-        <ul class="cookie-list">
-            <li>
-                <p><strong>Necessary / Essential Cookies</strong></p>
-                <p><em>Type:</em> Session Cookies</p>
-                <p><em>Administered by:</em> Us</p>
-                <p><em>Purpose:</em> These Cookies are essential to provide You with services available through the Website and to enable You to use some of its features. They help to ensure the Website functions properly and securely. Without these Cookies, the services that You have asked for cannot be provided, and We only use these Cookies to provide You with those services.</p>
-            </li>
-            <li>
-                <p><strong>Cookies Policy / Notice Acceptance Cookies</strong></p>
-                <p><em>Type:</em> Persistent Cookies</p>
-                <p><em>Administered by:</em> Us</p>
-                <p><em>Purpose:</em> These Cookies identify if users have accepted the use of cookies on the Website.</p>
-            </li>
-            <li>
-                <p><strong>Functionality Cookies</strong></p>
-                <p><em>Type:</em> Persistent Cookies</p>
-                <p><em>Administered by:</em> Us</p>
-                <p><em>Purpose:</em> These Cookies allow Us to remember choices You make when You use the Website, such as your language preference or theme settings. The purpose of these Cookies is to provide You with a more personal experience and to avoid You having to re-enter your preferences every time You use the Website.</p>
-            </li>
-        </ul>
-        <p>For more information about the cookies we use and your choices regarding cookies, please visit our Cookies Policy or the Cookies section of Our Privacy Policy.</p>
-
-        <h3>Use of Your Personal Data</h3>
-        <p>The Company may use Personal Data for the following purposes:</p>
-        <ul>
-            <li><strong>To provide and maintain our Service</strong>, including to monitor the usage of our Service and display song lyrics content.</li>
-            <li><strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication regarding updates or informative communications related to the functionalities of the Service, including security updates, when necessary or reasonable for their implementation.</li>
-            <li><strong>To provide You with news, special offers, and general information</strong> about other goods, services and events which We offer that are similar to those that you have already purchased or inquired about unless You have opted not to receive such information.</li>
-            <li><strong>To manage Your requests:</strong> To attend and manage Your requests to Us, including lyrics correction submissions or content removal requests.</li>
-            <li><strong>For business transfers:</strong> We may use Your Personal Data to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding.</li>
-            <li><strong>For other purposes:</strong> We may use Your information for other purposes, such as data analysis, identifying usage trends (e.g., most viewed lyrics, popular artists), determining the effectiveness of our promotional campaigns and to evaluate and improve our Service.</li>
-        </ul>
-
-        <h3>Sharing Your Personal Data</h3>
-        <p>We may share Your Personal Data in the following situations:</p>
-        <ul>
-            <li><strong>With Service Providers:</strong> We may share Your Personal Data with Service Providers to monitor and analyze the use of our Service and to contact You.</li>
-            <li><strong>For business transfers:</strong> We may share or transfer Your Personal Data in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.</li>
-            <li><strong>With Affiliates:</strong> We may share Your Personal Data with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.</li>
-            <li><strong>With business partners:</strong> We may share Your Personal Data with Our business partners to offer You certain products, services or promotions.</li>
-            <li><strong>With other users:</strong> If Our Service offers public areas (such as comments sections), when You share Personal Data or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.</li>
-            <li><strong>With Your consent:</strong> We may disclose Your Personal Data for any other purpose with Your consent.</li>
-        </ul>
-
-        <h3>Retention of Your Personal Data</h3>
-        <p>The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if We are required to retain Your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.</p>
-        <p>Where possible, We apply shorter retention periods and/or reduce identifiability by deleting, aggregating, or anonymizing data. Unless otherwise stated, the retention periods below are maximum periods ("up to") and We may delete or anonymize data sooner when it is no longer needed for the relevant purpose.</p>
-
-        <table class="retention-table">
-            <thead>
-                <tr>
-                    <th>Data Category</th>
-                    <th>Retention Period</th>
-                    <th>Purpose</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Website Analytics Data (cookies, IP addresses, device identifiers)</td>
-                    <td>Up to 24 months from collection</td>
-                    <td>Trend analysis, privacy compliance</td>
-                </tr>
-                <tr>
-                    <td>Server Logs (IP addresses, access times)</td>
-                    <td>Up to 24 months</td>
-                    <td>Security monitoring, troubleshooting</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p>We may retain Personal Data beyond the periods stated above for different reasons:</p>
-        <ul>
-            <li><strong>Legal obligation:</strong> We are required by law to retain specific data (e.g., financial records for tax authorities).</li>
-            <li><strong>Legal claims:</strong> Data is necessary to establish, exercise, or defend legal claims.</li>
-            <li><strong>Your explicit request:</strong> You ask Us to retain specific information.</li>
-            <li><strong>Technical limitations:</strong> Data exists in backup systems that are scheduled for routine deletion.</li>
-        </ul>
-        <p>You may request information about how long We will retain Your Personal Data by contacting Us.</p>
-        <p>When retention periods expire, We securely delete or anonymize Personal Data according to the following procedures:</p>
-        <ul>
-            <li><strong>Deletion:</strong> Personal Data is removed from Our systems and no longer actively processed.</li>
-            <li><strong>Backup retention:</strong> Residual copies may remain in encrypted backups for a limited period consistent with our backup retention schedule and are not restored except where necessary for security, disaster recovery, or legal compliance.</li>
-            <li><strong>Anonymization:</strong> In some cases, We convert Personal Data into anonymous statistical data that cannot be linked back to You. This anonymized data may be retained indefinitely for research and analytics.</li>
-        </ul>
-
-        <h3>Transfer of Your Personal Data</h3>
-        <p>Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ from those from Your jurisdiction.</p>
-        <p>Where required by applicable law, We will ensure that international transfers of Your Personal Data are subject to appropriate safeguards and supplementary measures where appropriate. The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.</p>
-
-        <h3>Delete Your Personal Data</h3>
-        <p>You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You.</p>
-        <p>You may contact Us at any time to request access to, correct, or delete any Personal Data that You have provided to Us. Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.</p>
-
-        <h3>Disclosure of Your Personal Data</h3>
-
-        <h4>Business Transactions</h4>
-        <p>If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.</p>
-
-        <h4>Law Enforcement</h4>
-        <p>Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).</p>
-
-        <h4>Other Legal Requirements</h4>
-        <p>The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:</p>
-        <ul>
-            <li>Comply with a legal obligation</li>
-            <li>Protect and defend the rights or property of the Company</li>
-            <li>Prevent or investigate possible wrongdoing in connection with the Service</li>
-            <li>Protect the personal safety of Users of the Service or the public</li>
-            <li>Protect against legal liability</li>
-        </ul>
-
-        <h3>Security of Your Personal Data</h3>
-        <p>The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially reasonable means to protect Your Personal Data, We cannot guarantee its absolute security.</p>
-
-        <h2>Your Data Protection Rights</h2>
-        <p>In accordance with applicable data protection laws, including the Republic of Indonesia Law Number 27 of 2022 concerning Personal Data Protection (Undang-Undang Perlindungan Data Pribadi - "UU PDP"), You have the following rights regarding Your Personal Data:</p>
-
-        <div class="rights-list">
-            <ul>
-                <li><strong>Right to Access:</strong> The right to obtain Your Personal Data processed by the Company and information regarding the processing, including the purposes, categories of data, and recipients.</li>
-                <li><strong>Right to Correct:</strong> The right to correct inaccurate or incomplete Personal Data that We hold about You.</li>
-                <li><strong>Right to Delete:</strong> The right to request deletion of Your Personal Data under certain conditions, such as when the data is no longer necessary for its original purpose.</li>
-                <li><strong>Right to Restrict Processing:</strong> The right to restrict the processing of Your Personal Data in certain circumstances.</li>
-                <li><strong>Right to Data Portability:</strong> The right to receive and transfer Your Personal Data in a structured, commonly used, and machine-readable format.</li>
-                <li><strong>Right to Object:</strong> The right to object to the processing of Your Personal Data for direct marketing purposes or based on Our legitimate interests.</li>
-                <li><strong>Right to Withdraw Consent:</strong> The right to withdraw consent at any time without affecting the lawfulness of processing based on consent before its withdrawal.</li>
-                <li><strong>Right to Lodge a Complaint:</strong> The right to lodge a complaint with a supervisory authority if You believe that the processing of Your Personal Data violates applicable data protection laws.</li>
-            </ul>
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white z-50 h-14 flex items-center justify-between px-4 border-b border-yt-border">
+        <div class="flex items-center">
+            <button id="menuBtn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover transition-colors">
+                <i data-lucide="menu" class="w-6 h-6 text-yt-icon"></i>
+            </button>
         </div>
-
-        <p>To exercise any of these rights, please contact Us using the contact information provided below. We will respond to Your request within 30 days as required by law. In some cases, We may need to verify Your identity before processing Your request.</p>
-
-        <h2>Children's Privacy</h2>
-        <p>Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us.</p>
-        <p>If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.</p>
-        <p>If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.</p>
-
-        <h2>Third-Party Services</h2>
-        <p>We may use third-party services that collect, monitor, and analyze data to improve our Service. Specifically, LyricoID may use the following third-party services:</p>
-
-        <div class="third-party-grid">
-            <div class="third-party-card">
-                <h4>🎵 Music & Media Embeds</h4>
-                <p><strong>YouTube:</strong> We embed YouTube videos which may collect cookies and usage data.</p>
-                <p><strong>Spotify:</strong> We may integrate with Spotify for music playback features.</p>
-                <p><em>Please refer to each service's privacy policy for more information.</em></p>
-            </div>
-            <div class="third-party-card">
-                <h4>🗄️ Data Storage (Google Firebase Firestore)</h4>
-                <p><strong>Google Firebase Firestore:</strong> Our website uses Google Firebase Firestore exclusively as a database to store and retrieve song lyrics text content. When You visit a lyrics page, the website fetches the lyrics data from Firestore to display it on Your screen.</p>
-                <p>Firebase Firestore may collect certain technical data (such as IP addresses and device identifiers) as part of its service. This data is processed by Google under its own terms.</p>
-                <p><em>Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></em></p>
-                <p><em>Firebase Terms: <a href="https://firebase.google.com/terms" target="_blank" rel="noopener">firebase.google.com/terms</a></em></p>
-            </div>
-            <div class="third-party-card">
-                <h4>☁️ Hosting & Infrastructure</h4>
-                <p><strong>Hosting Provider:</strong> Our Service is hosted on third-party servers which may process Your data for service delivery.</p>
-                <p><em>Data is processed in accordance with our data processing agreements.</em></p>
+        <div class="flex items-center flex-1 max-w-[640px] mx-4">
+            <div class="flex flex-1 items-center">
+                <div class="flex flex-1 h-10 border border-yt-border rounded-l-full overflow-hidden focus-within:border-[#1c62b9] focus-within:shadow-inner">
+                    <input id="searchInput" type="text" placeholder="Cari di halaman ini..." class="flex-1 h-full px-4 text-base outline-none bg-transparent text-yt-text placeholder:text-yt-text-light" oninput="searchInPage(this.value)">
+                </div>
+                <button class="h-10 w-16 bg-yt-chip-bg border border-l-0 border-yt-border rounded-r-full flex items-center justify-center hover:bg-[#e8e8e8] transition-colors">
+                    <i data-lucide="search" class="w-5 h-5 text-yt-icon"></i>
+                </button>
             </div>
         </div>
+        <div class="flex items-center">
+            <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank">
+                <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Profile" class="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity">
+            </a>
+        </div>
+    </header>
 
-        <p>We encourage You to review the privacy policies of these third-party service providers. We do not have control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party services.</p>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-14 bottom-0 w-[240px] bg-white overflow-y-auto z-40 pb-8 pt-2 px-3 transition-transform duration-200">
+        <div class="pb-3 border-b border-yt-border">
+            <div class="sidebar-item" onclick="window.location.href='../index.html'">
+                <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
+                <span class="text-sm">Beranda</span>
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='../SongLyrics/index.html'">
+                <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
+                <span class="text-sm">Dapatkan Lirik Lagu</span>
+            </div>
+            <div class="sidebar-item active">
+                <span class="icon-wrap"><i data-lucide="shield" class="w-6 h-6"></i></span>
+                <span class="text-sm">Privacy Policy</span>
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='../Team-of-Service/index.html'">
+                <span class="icon-wrap"><i data-lucide="file-text" class="w-6 h-6"></i></span>
+                <span class="text-sm">Terms of Service</span>
+            </div>
+        </div>
+        <div class="px-3 py-3">
+            <p class="text-xs text-yt-text-light leading-5">About Song Creator and Developer</p>
+            <p class="text-xs text-yt-text-light leading-5 mt-2">© 2026 All Rights Reserved</p>
+        </div>
+    </aside>
 
-        <h2>Copyright & Intellectual Property Notice</h2>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
 
-        <div class="copyright-notice">
-            <h3>⚠️ Disclaimer Regarding Lyrics Content</h3>
-            <p>LyricoID is a <strong>fan-made content aggregator</strong> that provides song lyrics for informational and educational purposes only. All lyrics displayed on this website are the property of their respective authors, songwriters, and music publishers. <strong>We do not claim ownership of any lyrics content.</strong></p>
+    <!-- Main Content -->
+    <main id="mainContent" class="ml-[240px] mt-14 transition-all duration-200">
+        <div class="flex">
+            <!-- TOC Sidebar (Desktop) -->
+            <div class="toc-sidebar hidden lg:block w-[220px] flex-shrink-0 p-4 pt-6">
+                <nav class="toc-nav">
+                    <p class="text-xs font-medium text-yt-text-light uppercase tracking-wider px-3 mb-3">Daftar Isi</p>
+                    <a href="#definitions" class="toc-link">Definisi</a>
+                    <a href="#collecting" class="toc-link">Pengumpulan Data</a>
+                    <a href="#cookies" class="toc-link">Cookies</a>
+                    <a href="#use" class="toc-link">Penggunaan Data</a>
+                    <a href="#sharing" class="toc-link">Pembagian Data</a>
+                    <a href="#retention" class="toc-link">Retensi Data</a>
+                    <a href="#transfer" class="toc-link">Transfer Data</a>
+                    <a href="#delete" class="toc-link">Hapus Data</a>
+                    <a href="#disclosure" class="toc-link">Pengungkapan Data</a>
+                    <a href="#security" class="toc-link">Keamanan</a>
+                    <a href="#rights" class="toc-link">Hak Pengguna</a>
+                    <a href="#children" class="toc-link">Anak-anak</a>
+                    <a href="#thirdparty" class="toc-link">Layanan Pihak Ketiga</a>
+                    <a href="#copyright" class="toc-link">Hak Cipta & DMCA</a>
+                    <a href="#links" class="toc-link">Tautan Eksternal</a>
+                    <a href="#donttrack" class="toc-link">Do Not Track</a>
+                    <a href="#changes" class="toc-link">Perubahan Kebijakan</a>
+                    <a href="#contact" class="toc-link">Hubungi Kami</a>
+                </nav>
+            </div>
 
-            <h3>Accuracy of Lyrics</h3>
-            <p>Song lyrics on LyricoID are transcribed by fans and may contain errors, inaccuracies, or incomplete content. We make no guarantee regarding the accuracy, completeness, or reliability of any lyrics. For official lyrics, please refer to authorized music platforms or the original copyright holders.</p>
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+                <div class="bg-white border-b border-yt-border px-6 py-4">
+                    <div class="flex items-center gap-2 text-sm text-yt-text-secondary">
+                        <a href="../index.html" class="hover:text-yt-text transition-colors">Beranda</a>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-yt-text-light"></i>
+                        <span class="text-yt-text font-medium">Privacy Policy</span>
+                    </div>
+                </div>
+
+                <div class="p-6 max-w-[860px]">
+                    <div class="pp-content">
+
+                        <h1>Privacy Policy</h1>
+                        <p class="last-updated">Last updated: July 01, 2026</p>
+
+                        <p class="intro-text">This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
+
+                        <p class="intro-text">We use Your Personal Data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
+
+                        <h2 id="definitions">Interpretation and Definitions</h2>
+
+                        <h3>Interpretation</h3>
+                        <p>The words whose initial letters are capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+
+                        <h3>Definitions</h3>
+                        <p>For the purposes of this Privacy Policy:</p>
+                        <ul>
+                            <li><strong>Affiliate</strong> means an entity that controls, is controlled by, or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</li>
+                            <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Privacy Policy) refers to Lyric.o.</li>
+                            <li><strong>Cookies</strong> are small files that are placed on Your computer, mobile device or any other device by a website, containing the details of Your browsing history on that website among its many uses.</li>
+                            <li><strong>Country</strong> refers to: Indonesia.</li>
+                            <li><strong>Device</strong> means any device that can access the Service such as a computer, a cell phone or a digital tablet.</li>
+                            <li><strong>Personal Data</strong> (or "Personal Information") is any information that relates to an identified or identifiable individual. We use "Personal Data" and "Personal Information" interchangeably unless a law uses a specific term.</li>
+                            <li><strong>Service</strong> refers to the Website.</li>
+                            <li><strong>Service Provider</strong> means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.</li>
+                            <li><strong>Usage Data</strong> refers to data collected automatically, either generated by the use of the Service or from the Service infrastructure itself (for example, the duration of a page visit).</li>
+                            <li><strong>Website</strong> refers to Lyric.o, accessible from <a href="https://lyricoid.work.gd/" rel="external nofollow noopener" target="_blank">https://lyricoid.work.gd/</a>.</li>
+                            <li><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
+                        </ul>
+
+                        <h2 id="collecting">Collecting and Using Your Personal Data</h2>
+
+                        <h3>Types of Data Collected</h3>
+
+                        <h4>Usage Data</h4>
+                        <p>Usage Data is collected automatically when using the Service.</p>
+                        <p>Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p>
+                        <p>When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device's unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.</p>
+                        <p>We may also collect information that Your browser sends whenever You visit Our Service or when You access the Service by or through a mobile device.</p>
+
+                        <h4 id="cookies">Tracking Technologies and Cookies</h4>
+                        <p>We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies We use include beacons, tags, and scripts to collect and track information and to improve and analyze Our Service. The technologies We use may include:</p>
+                        <ul>
+                            <li><strong>Cookies or Browser Cookies.</strong> A cookie is a small file placed on Your Device. You can instruct Your browser to refuse all Cookies or to indicate when a Cookie is being sent. However, if You do not accept Cookies, You may not be able to use some parts of our Service.</li>
+                            <li><strong>Web Beacons.</strong> Certain sections of our Service and our emails may contain small electronic files known as web beacons (also referred to as clear gifs, pixel tags, and single-pixel gifs) that permit the Company, for example, to count users who have visited those pages or opened an email and for other related website statistics (for example, recording the popularity of a certain section and verifying system and server integrity).</li>
+                        </ul>
+                        <p>Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on Your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close Your web browser.</p>
+                        <p>Where required by law, we use non-essential cookies only with Your consent. You can withdraw or change Your consent at any time using Our cookie preferences tool (if available) or through Your browser/device settings. Withdrawing consent does not affect the lawfulness of processing based on consent before its withdrawal.</p>
+
+                        <p>We use both Session and Persistent Cookies for the purposes set out below:</p>
+                        <ul class="cookie-list">
+                            <li>
+                                <p><strong>Necessary / Essential Cookies</strong></p>
+                                <p><em>Type:</em> Session Cookies</p>
+                                <p><em>Administered by:</em> Us</p>
+                                <p><em>Purpose:</em> These Cookies are essential to provide You with services available through the Website and to enable You to use some of its features. They help to ensure the Website functions properly and securely. Without these Cookies, the services that You have asked for cannot be provided, and We only use these Cookies to provide You with those services.</p>
+                            </li>
+                            <li>
+                                <p><strong>Cookies Policy / Notice Acceptance Cookies</strong></p>
+                                <p><em>Type:</em> Persistent Cookies</p>
+                                <p><em>Administered by:</em> Us</p>
+                                <p><em>Purpose:</em> These Cookies identify if users have accepted the use of cookies on the Website.</p>
+                            </li>
+                            <li>
+                                <p><strong>Functionality Cookies</strong></p>
+                                <p><em>Type:</em> Persistent Cookies</p>
+                                <p><em>Administered by:</em> Us</p>
+                                <p><em>Purpose:</em> These Cookies allow Us to remember choices You make when You use the Website, such as your language preference or theme settings. The purpose of these Cookies is to provide You with a more personal experience and to avoid You having to re-enter your preferences every time You use the Website.</p>
+                            </li>
+                        </ul>
+                        <p>For more information about the cookies we use and your choices regarding cookies, please visit our Cookies Policy or the Cookies section of Our Privacy Policy.</p>
+
+                        <h3 id="use">Use of Your Personal Data</h3>
+                        <p>The Company may use Personal Data for the following purposes:</p>
+                        <ul>
+                            <li><strong>To provide and maintain our Service</strong>, including to monitor the usage of our Service and display song lyrics content.</li>
+                            <li><strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication regarding updates or informative communications related to the functionalities of the Service, including security updates, when necessary or reasonable for their implementation.</li>
+                            <li><strong>To provide You with news, special offers, and general information</strong> about other goods, services and events which We offer that are similar to those that you have already purchased or inquired about unless You have opted not to receive such information.</li>
+                            <li><strong>To manage Your requests:</strong> To attend and manage Your requests to Us, including lyrics correction submissions or content removal requests.</li>
+                            <li><strong>For business transfers:</strong> We may use Your Personal Data to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding.</li>
+                            <li><strong>For other purposes:</strong> We may use Your information for other purposes, such as data analysis, identifying usage trends (e.g., most viewed lyrics, popular artists), determining the effectiveness of our promotional campaigns and to evaluate and improve our Service.</li>
+                        </ul>
+
+                        <h3 id="sharing">Sharing Your Personal Data</h3>
+                        <p>We may share Your Personal Data in the following situations:</p>
+                        <ul>
+                            <li><strong>With Service Providers:</strong> We may share Your Personal Data with Service Providers to monitor and analyze the use of our Service and to contact You.</li>
+                            <li><strong>For business transfers:</strong> We may share or transfer Your Personal Data in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.</li>
+                            <li><strong>With Affiliates:</strong> We may share Your Personal Data with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.</li>
+                            <li><strong>With business partners:</strong> We may share Your Personal Data with Our business partners to offer You certain products, services or promotions.</li>
+                            <li><strong>With other users:</strong> If Our Service offers public areas (such as comments sections), when You share Personal Data or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.</li>
+                            <li><strong>With Your consent:</strong> We may disclose Your Personal Data for any other purpose with Your consent.</li>
+                        </ul>
+
+                        <h3 id="retention">Retention of Your Personal Data</h3>
+                        <p>The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if We are required to retain Your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.</p>
+                        <p>Where possible, We apply shorter retention periods and/or reduce identifiability by deleting, aggregating, or anonymizing data. Unless otherwise stated, the retention periods below are maximum periods ("up to") and We may delete or anonymize data sooner when it is no longer needed for the relevant purpose.</p>
+
+                        <table class="retention-table">
+                            <thead>
+                                <tr>
+                                    <th>Data Category</th>
+                                    <th>Retention Period</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Website Analytics Data (cookies, IP addresses, device identifiers)</td>
+                                    <td>Up to 24 months from collection</td>
+                                    <td>Trend analysis, privacy compliance</td>
+                                </tr>
+                                <tr>
+                                    <td>Server Logs (IP addresses, access times)</td>
+                                    <td>Up to 24 months</td>
+                                    <td>Security monitoring, troubleshooting</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p>We may retain Personal Data beyond the periods stated above for different reasons:</p>
+                        <ul>
+                            <li><strong>Legal obligation:</strong> We are required by law to retain specific data (e.g., financial records for tax authorities).</li>
+                            <li><strong>Legal claims:</strong> Data is necessary to establish, exercise, or defend legal claims.</li>
+                            <li><strong>Your explicit request:</strong> You ask Us to retain specific information.</li>
+                            <li><strong>Technical limitations:</strong> Data exists in backup systems that are scheduled for routine deletion.</li>
+                        </ul>
+                        <p>You may request information about how long We will retain Your Personal Data by contacting Us.</p>
+                        <p>When retention periods expire, We securely delete or anonymize Personal Data according to the following procedures:</p>
+                        <ul>
+                            <li><strong>Deletion:</strong> Personal Data is removed from Our systems and no longer actively processed.</li>
+                            <li><strong>Backup retention:</strong> Residual copies may remain in encrypted backups for a limited period consistent with our backup retention schedule and are not restored except where necessary for security, disaster recovery, or legal compliance.</li>
+                            <li><strong>Anonymization:</strong> In some cases, We convert Personal Data into anonymous statistical data that cannot be linked back to You. This anonymized data may be retained indefinitely for research and analytics.</li>
+                        </ul>
+
+                        <h3 id="transfer">Transfer of Your Personal Data</h3>
+                        <p>Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ from those from Your jurisdiction.</p>
+                        <p>Where required by applicable law, We will ensure that international transfers of Your Personal Data are subject to appropriate safeguards and supplementary measures where appropriate. The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.</p>
+
+                        <h3 id="delete">Delete Your Personal Data</h3>
+                        <p>You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You.</p>
+                        <p>You may contact Us at any time to request access to, correct, or delete any Personal Data that You have provided to Us. Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.</p>
+
+                        <h3 id="disclosure">Disclosure of Your Personal Data</h3>
+
+                        <h4>Business Transactions</h4>
+                        <p>If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.</p>
+
+                        <h4>Law Enforcement</h4>
+                        <p>Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).</p>
+
+                        <h4>Other Legal Requirements</h4>
+                        <p>The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:</p>
+                        <ul>
+                            <li>Comply with a legal obligation</li>
+                            <li>Protect and defend the rights or property of the Company</li>
+                            <li>Prevent or investigate possible wrongdoing in connection with the Service</li>
+                            <li>Protect the personal safety of Users of the Service or the public</li>
+                            <li>Protect against legal liability</li>
+                        </ul>
+
+                        <h3 id="security">Security of Your Personal Data</h3>
+                        <p>The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially reasonable means to protect Your Personal Data, We cannot guarantee its absolute security.</p>
+
+                        <h2 id="rights">Your Data Protection Rights</h2>
+                        <p>In accordance with applicable data protection laws, including the Republic of Indonesia Law Number 27 of 2022 concerning Personal Data Protection (Undang-Undang Perlindungan Data Pribadi - "UU PDP"), You have the following rights regarding Your Personal Data:</p>
+
+                        <div class="rights-list">
+                            <ul>
+                                <li><strong>Right to Access:</strong> The right to obtain Your Personal Data processed by the Company and information regarding the processing, including the purposes, categories of data, and recipients.</li>
+                                <li><strong>Right to Correct:</strong> The right to correct inaccurate or incomplete Personal Data that We hold about You.</li>
+                                <li><strong>Right to Delete:</strong> The right to request deletion of Your Personal Data under certain conditions, such as when the data is no longer necessary for its original purpose.</li>
+                                <li><strong>Right to Restrict Processing:</strong> The right to restrict the processing of Your Personal Data in certain circumstances.</li>
+                                <li><strong>Right to Data Portability:</strong> The right to receive and transfer Your Personal Data in a structured, commonly used, and machine-readable format.</li>
+                                <li><strong>Right to Object:</strong> The right to object to the processing of Your Personal Data for direct marketing purposes or based on Our legitimate interests.</li>
+                                <li><strong>Right to Withdraw Consent:</strong> The right to withdraw consent at any time without affecting the lawfulness of processing based on consent before its withdrawal.</li>
+                                <li><strong>Right to Lodge a Complaint:</strong> The right to lodge a complaint with a supervisory authority if You believe that the processing of Your Personal Data violates applicable data protection laws.</li>
+                            </ul>
+                        </div>
+
+                        <p>To exercise any of these rights, please contact Us using the contact information provided below. We will respond to Your request within 30 days as required by law. In some cases, We may need to verify Your identity before processing Your request.</p>
+
+                        <h2 id="children">Children's Privacy</h2>
+                        <p>Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us.</p>
+                        <p>If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.</p>
+                        <p>If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.</p>
+
+                        <h2 id="thirdparty">Third-Party Services</h2>
+                        <p>We may use third-party services that collect, monitor, and analyze data to improve our Service. Specifically, LyricoID may use the following third-party services:</p>
+
+                        <div class="third-party-grid">
+                            <div class="third-party-card">
+                                <h4>🎵 Music & Media Embeds</h4>
+                                <p><strong>YouTube:</strong> We embed YouTube videos which may collect cookies and usage data.</p>
+                                <p><strong>Spotify:</strong> We may integrate with Spotify for music playback features.</p>
+                                <p><em>Please refer to each service's privacy policy for more information.</em></p>
+                            </div>
+                            <div class="third-party-card">
+                                <h4>🗄️ Data Storage</h4>
+                                <p><strong>Google Firebase Firestore:</strong> Our website uses Google Firebase Firestore exclusively as a database to store and retrieve song lyrics text content. When You visit a lyrics page, the website fetches the lyrics data from Firestore to display it on Your screen.</p>
+                                <p>Firebase Firestore may collect certain technical data (such as IP addresses and device identifiers) as part of its service.</p>
+                                <p><em>Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></em></p>
+                            </div>
+                            <div class="third-party-card">
+                                <h4>☁️ Hosting & Infrastructure</h4>
+                                <p><strong>Hosting Provider:</strong> Our Service is hosted on third-party servers which may process Your data for service delivery.</p>
+                                <p><em>Data is processed in accordance with our data processing agreements.</em></p>
+                            </div>
+                        </div>
+
+                        <p>We encourage You to review the privacy policies of these third-party service providers. We do not have control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party services.</p>
+
+                        <h2 id="copyright">Copyright & Intellectual Property Notice</h2>
+
+                        <div class="copyright-notice">
+                            <h3>⚠️ Disclaimer Regarding Lyrics Content</h3>
+                            <p>LyricoID is a <strong>fan-made content aggregator</strong> that provides song lyrics for informational and educational purposes only. All lyrics displayed on this website are the property of their respective authors, songwriters, and music publishers. <strong>We do not claim ownership of any lyrics content.</strong></p>
+
+                            <h3>Accuracy of Lyrics</h3>
+                            <p>Song lyrics on LyricoID are transcribed by fans and may contain errors, inaccuracies, or incomplete content. We make no guarantee regarding the accuracy, completeness, or reliability of any lyrics. For official lyrics, please refer to authorized music platforms or the original copyright holders.</p>
+                        </div>
+
+                        <h3>DMCA / Takedown Requests</h3>
+                        <p>If you are a copyright holder (songwriter, publisher, or authorized representative) and believe that any lyrics content on LyricoID infringes your copyright, please submit a takedown notice to: <strong>likezelwit@gmail.com</strong></p>
+
+                        <p>Your notice must include:</p>
+                        <ol class="dmca-steps">
+                            <li>Identification of the copyrighted work claimed to have been infringed</li>
+                            <li>Identification of the material that is claimed to be infringing and its URL/location on the website</li>
+                            <li>Your contact information (name, address, telephone number, and email address)</li>
+                            <li>A statement that you have a good faith belief that the use is not authorized by the copyright owner, its agent, or the law</li>
+                            <li>A statement, under penalty of perjury, that the information in the notice is accurate and that you are authorized to act on behalf of the copyright owner</li>
+                            <li>Your physical or electronic signature</li>
+                        </ol>
+
+                        <div class="warning-box">
+                            <p>Upon receipt of a valid notice, we will promptly remove or disable access to the allegedly infringing material.</p>
+                        </div>
+
+                        <h2 id="links">Links to Other Websites</h2>
+                        <p>Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.</p>
+                        <p>We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.</p>
+
+                        <h2 id="donttrack">Do Not Track Signals</h2>
+                        <p>Some browsers incorporate a "Do Not Track" ("DNT") feature that signals to websites that a User does not want to be tracked. Our Service does not currently respond to DNT signals. However, You can manage Your cookie preferences through Your browser settings as described in the Cookies section of this Privacy Policy.</p>
+
+                        <h2 id="changes">Changes to This Privacy Policy</h2>
+                        <p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.</p>
+                        <p>We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.</p>
+                        <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+
+                        <h2 id="contact">Contact Us</h2>
+                        <p>If you have any questions about this Privacy Policy, You can contact us:</p>
+
+                        <div class="contact-box">
+                            <ul>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Email</p>
+                                        <a href="mailto:likezelwit@gmail.com">likezelwit@gmail.com</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Website</p>
+                                        <a href="https://lyricoid.work.gd/Lyric.o/Contact" target="_blank" rel="noopener">lyricoid.work.gd/Lyric.o/Contact</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Controller of Personal Data</p>
+                                        <p style="margin-bottom: 0;">Lyric.o<br>Indonesia</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <h3>DMCA / Takedown Requests</h3>
-        <p>If you are a copyright holder (songwriter, publisher, or authorized representative) and believe that any lyrics content on LyricoID infringes your copyright, please submit a takedown notice to: <strong>privacy@lyricoid.work.gd</strong></p>
+        <!-- Footer -->
+        <footer class="mt-10 bg-white border-t border-yt-border py-8 px-6">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-wrap items-center justify-center gap-6 text-sm">
+                    <a href="../index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Beranda</a>
+                    <a href="../SongLyrics/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Dapatkan Lirik Lagu</a>
+                    <a href="index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Privacy Policy</a>
+                    <a href="../Team-of-Service/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Terms of Service</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="text-yt-text-secondary hover:text-yt-text transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+                <p class="text-xs text-yt-text-light text-center md:text-right">© 2026 Lyric.o. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </main>
 
-        <p>Your notice must include:</p>
-        <ol class="dmca-steps">
-            <li>Identification of the copyrighted work claimed to have been infringed</li>
-            <li>Identification of the material that is claimed to be infringing and its URL/location on the website</li>
-            <li>Your contact information (name, address, telephone number, and email address)</li>
-            <li>A statement that you have a good faith belief that the use is not authorized by the copyright owner, its agent, or the law</li>
-            <li>A statement, under penalty of perjury, that the information in the notice is accurate and that you are authorized to act on behalf of the copyright owner</li>
-            <li>Your physical or electronic signature</li>
-        </ol>
+    <script>
+        lucide.createIcons();
 
-        <div class="warning-box">
-            <p>Upon receipt of a valid notice, we will promptly remove or disable access to the allegedly infringing material.</p>
-        </div>
+        // Sidebar toggle
+        let sidebarOpen = true;
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth < 1312) {
+                sidebarOpen = !sidebarOpen;
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                overlay.classList.toggle('hidden', !sidebarOpen);
+            } else {
+                sidebarOpen = !sidebarOpen;
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                main.style.marginLeft = sidebarOpen ? '240px' : '0';
+            }
+        }
+        document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
 
-        <h2>Links to Other Websites</h2>
-        <p>Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.</p>
-        <p>We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.</p>
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth < 1312) {
+                sidebar.style.transform = 'translateX(-100%)';
+                sidebarOpen = false;
+                main.style.marginLeft = '0';
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.style.transform = 'translateX(0)';
+                main.style.marginLeft = '240px';
+                sidebar.style.width = '240px';
+                sidebarOpen = true;
+                overlay.classList.add('hidden');
+            }
+        }
+        window.addEventListener('resize', handleResize);
+        handleResize();
 
-        <h2>Do Not Track Signals</h2>
-        <p>Some browsers incorporate a "Do Not Track" ("DNT") feature that signals to websites that a User does not want to be tracked. Our Service does not currently respond to DNT signals. However, You can manage Your cookie preferences through Your browser settings as described in the Cookies section of this Privacy Policy.</p>
+        // Toast
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
 
-        <h2>Changes to This Privacy Policy</h2>
-        <p>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.</p>
-        <p>We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.</p>
-        <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+        // In-page search
+        function searchInPage(query) {
+            const q = query.trim().toLowerCase();
+            const content = document.querySelector('.pp-content');
+            if (!content) return;
 
-        <h2>Contact Us</h2>
-        <p>If you have any questions about this Privacy Policy, You can contact us:</p>
+            // Remove previous highlights
+            const prevMarks = content.querySelectorAll('mark.search-hl');
+            prevMarks.forEach(m => {
+                const parent = m.parentNode;
+                parent.replaceChild(document.createTextNode(m.textContent), m);
+                parent.normalize();
+            });
 
-        <div class="contact-box">
-            <ul>
-                <li>
-                    <div class="contact-icon">
-                        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <div>
-                        <p style="color: #d4d4d8; margin-bottom: 2px;">Email</p>
-                        <a href="mailto:privacy@lyricoid.work.gd">privacy@lyricoid.work.gd</a>
-                    </div>
-                </li>
-                <li>
-                    <div class="contact-icon">
-                        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <div>
-                        <p style="color: #d4d4d8; margin-bottom: 2px;">Website</p>
-                        <a href="https://lyricoid.work.gd/Lyric.o/Contact" target="_blank" rel="noopener">lyricoid.work.gd/Lyric.o/Contact</a>
-                    </div>
-                </li>
-                <li>
-                    <div class="contact-icon">
-                        <svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <div>
-                        <p style="color: #d4d4d8; margin-bottom: 2px;">Controller of Personal Data</p>
-                        <p>Lyric.o<br>Indonesia</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
+            if (!q || q.length < 2) return;
 
-        <p class="footer-note">© 2026 Lyric.o. All rights reserved.</p>
-    </div>
+            // Walk text nodes and highlight
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+            textNodes.forEach(node => {
+                if (node.parentElement.closest('.cookie-list, .dmca-steps, .rights-list, .copyright-notice, .warning-box, .third-party-card, .contact-box, .retention-table, h1, h2, h3, h4')) return;
+                const text = node.textContent;
+                const lower = text.toLowerCase();
+                const idx = lower.indexOf(q);
+                if (idx === -1) return;
+
+                const before = text.substring(0, idx);
+                const match = text.substring(idx, idx + q.length);
+                const after = text.substring(idx + q.length);
+
+                const mark = document.createElement('mark');
+                mark.className = 'search-hl';
+                mark.style.cssText = 'background: #fde68a; color: #0f0f0f; padding: 0 2px; border-radius: 2px;';
+                mark.textContent = match;
+
+                const frag = document.createDocumentFragment();
+                if (before) frag.appendChild(document.createTextNode(before));
+                frag.appendChild(mark);
+                if (after) frag.appendChild(document.createTextNode(after));
+
+                node.parentNode.replaceChild(frag, node);
+
+                // Scroll to first match
+                const firstMark = content.querySelector('mark.search-hl');
+                if (firstMark) {
+                    firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        // TOC active tracking
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = [];
+        tocLinks.forEach(link => {
+            const id = link.getAttribute('href').substring(1);
+            const el = document.getElementById(id);
+            if (el) sections.push({ id, el, link });
+        });
+
+        function updateTOC() {
+            let current = sections[0];
+            const scrollTop = window.scrollY;
+
+            sections.forEach(s => {
+                if (s.el.offsetTop - 100 <= scrollTop) {
+                    current = s;
+                }
+            });
+
+            tocLinks.forEach(l => l.classList.remove('active'));
+            if (current) current.link.classList.add('active');
+        }
+
+        window.addEventListener('scroll', updateTOC, { passive: true });
+        updateTOC();
+
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.getAttribute('href').substring(1);
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Clear search on Escape
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                const input = document.getElementById('searchInput');
+                if (input.value) {
+                    input.value = '';
+                    searchInPage('');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
