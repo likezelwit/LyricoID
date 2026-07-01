@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Lyric.o</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'roboto': ['Roboto', 'sans-serif'] },
+                    colors: {
+                        'yt-red': '#FF0000', 'yt-red-hover': '#CC0000',
+                        'yt-black': '#0f0f0f', 'yt-text': '#0f0f0f',
+                        'yt-text-secondary': '#606060', 'yt-text-light': '#909090',
+                        'yt-bg': '#f9f9f9', 'yt-chip-bg': '#f2f2f2',
+                        'yt-chip-active': '#0f0f0f', 'yt-chip-active-text': '#fff',
+                        'yt-blue': '#065fd4', 'yt-blue-hover': '#0550b5',
+                        'yt-border': '#e5e5e5', 'yt-hover': '#f2f2f2', 'yt-icon': '#030303',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: #f9f9f9; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #909090; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #606060; }
+        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; }
+        .sidebar-item:hover { background: #f2f2f2; }
+        .sidebar-item.active { background: #f2f2f2; font-weight: 500; }
+        .sidebar-item .icon-wrap { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 9999; transition: transform 0.3s ease; pointer-events: none; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .tos-content h1 { font-size: 1.75rem; font-weight: 500; color: #0f0f0f; margin-bottom: 4px; letter-spacing: -0.01em; }
+        .tos-content .last-updated { color: #909090; font-size: 13px; margin-bottom: 24px; }
+        .tos-content .intro-text { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+        .tos-content h2 { font-size: 1.25rem; font-weight: 500; color: #0f0f0f; margin-top: 36px; margin-bottom: 14px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
+        .tos-content h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .tos-content h3 { font-size: 1.05rem; font-weight: 500; color: #0f0f0f; margin-top: 24px; margin-bottom: 10px; }
+        .tos-content h4 { font-size: 0.9375rem; font-weight: 500; color: #0f0f0f; margin-top: 18px; margin-bottom: 8px; }
+        .tos-content p { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+        .tos-content ul, .tos-content ol { color: #606060; font-size: 14px; line-height: 1.7; margin-bottom: 14px; padding-left: 24px; }
+        .tos-content li { margin-bottom: 8px; }
+        .tos-content li p { margin-bottom: 4px; }
+        .tos-content strong { color: #0f0f0f; font-weight: 500; }
+        .tos-content a { color: #065fd4; text-decoration: none; }
+        .tos-content a:hover { text-decoration: underline; }
+
+        .highlight-box { background: #f0f4ff; border: 1px solid #c7d7fe; border-radius: 12px; padding: 20px; margin: 16px 0; }
+        .highlight-box h3 { color: #1e40af; margin-top: 0; }
+        .highlight-box p, .highlight-box li { color: #3b5998; }
+
+        .warning-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px 20px; margin: 16px 0; }
+        .warning-box p { color: #92400e; margin-bottom: 0; }
+
+        .dmca-steps { counter-reset: dmca; list-style: none; padding-left: 0; }
+        .dmca-steps li { counter-increment: dmca; position: relative; padding-left: 36px; margin-bottom: 10px; }
+        .dmca-steps li::before { content: counter(dmca); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #0f0f0f; }
+
+        .contact-box { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin-top: 12px; }
+        .contact-box ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+        .contact-box li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .contact-box li:last-child { margin-bottom: 0; }
+        .contact-icon { width: 36px; height: 36px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .contact-icon svg { width: 18px; height: 18px; stroke: #606060; fill: none; stroke-width: 2; }
+
+        .toc-nav { position: sticky; top: 70px; max-height: calc(100vh - 90px); overflow-y: auto; }
+        .toc-nav::-webkit-scrollbar { width: 4px; }
+        .toc-nav::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .toc-link { display: block; padding: 6px 12px; font-size: 13px; color: #606060; border-left: 2px solid transparent; transition: all 0.15s; text-decoration: none; border-radius: 0 4px 4px 0; line-height: 1.4; }
+        .toc-link:hover { color: #0f0f0f; background: #f2f2f2; }
+        .toc-link.active { color: #065fd4; border-left-color: #065fd4; background: #f0f4ff; font-weight: 500; }
+
+        @media (max-width: 1023px) {
+            .toc-sidebar { display: none !important; }
+        }
+    </style>
+</head>
+<body class="font-roboto">
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white z-50 h-14 flex items-center justify-between px-4 border-b border-yt-border">
+        <div class="flex items-center">
+            <button id="menuBtn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover transition-colors">
+                <i data-lucide="menu" class="w-6 h-6 text-yt-icon"></i>
+            </button>
+        </div>
+        <div class="flex items-center flex-1 max-w-[640px] mx-4">
+            <div class="flex flex-1 items-center">
+                <div class="flex flex-1 h-10 border border-yt-border rounded-l-full overflow-hidden focus-within:border-[#1c62b9] focus-within:shadow-inner">
+                    <input id="searchInput" type="text" placeholder="Cari di halaman ini..." class="flex-1 h-full px-4 text-base outline-none bg-transparent text-yt-text placeholder:text-yt-text-light" oninput="searchInPage(this.value)">
+                </div>
+                <button class="h-10 w-16 bg-yt-chip-bg border border-l-0 border-yt-border rounded-r-full flex items-center justify-center hover:bg-[#e8e8e8] transition-colors">
+                    <i data-lucide="search" class="w-5 h-5 text-yt-icon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank">
+                <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" alt="Profile" class="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity">
+            </a>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-14 bottom-0 w-[240px] bg-white overflow-y-auto z-40 pb-8 pt-2 px-3 transition-transform duration-200">
+        <div class="pb-3 border-b border-yt-border">
+            <div class="sidebar-item" onclick="window.location.href='../../index.html'">
+                <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
+                <span class="text-sm">Beranda</span>
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='../SongLyrics/index.html'">
+                <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
+                <span class="text-sm">Dapatkan Lirik Lagu</span>
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='../Privacy-Policy/index.html'">
+                <span class="icon-wrap"><i data-lucide="shield" class="w-6 h-6"></i></span>
+                <span class="text-sm">Privacy Policy</span>
+            </div>
+            <div class="sidebar-item active">
+                <span class="icon-wrap"><i data-lucide="file-text" class="w-6 h-6"></i></span>
+                <span class="text-sm">Terms of Service</span>
+            </div>
+        </div>
+        <div class="px-3 py-3">
+            <p class="text-xs text-yt-text-light leading-5">About Song Creator and Developer</p>
+            <p class="text-xs text-yt-text-light leading-5 mt-2">© 2026 All Rights Reserved</p>
+        </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="ml-[240px] mt-14 transition-all duration-200">
+        <div class="flex">
+            <!-- TOC Sidebar (Desktop) -->
+            <div class="toc-sidebar hidden lg:block w-[220px] flex-shrink-0 p-4 pt-6">
+                <nav class="toc-nav">
+                    <p class="text-xs font-medium text-yt-text-light uppercase tracking-wider px-3 mb-3">Daftar Isi</p>
+                    <a href="#definitions" class="toc-link">Definisi</a>
+                    <a href="#acknowledgment" class="toc-link">Pengakuan</a>
+                    <a href="#nature-of-service" class="toc-link">Sifat Layanan</a>
+                    <a href="#ip-notice" class="toc-link">Hak Cipta & Lirik</a>
+                    <a href="#user-conduct" class="toc-link">Perilaku Pengguna</a>
+                    <a href="#links" class="toc-link">Tautan Pihak Ketiga</a>
+                    <a href="#termination" class="toc-link">Penghentian</a>
+                    <a href="#limitation" class="toc-link">Batasan Tanggung Jawab</a>
+                    <a href="#disclaimer" class="toc-link">Disclaimer</a>
+                    <a href="#indemnification" class="toc-link">Ganti Rugi</a>
+                    <a href="#governing-law" class="toc-link">Hukum yang Berlaku</a>
+                    <a href="#disputes" class="toc-link">Penyelesaian Sengketa</a>
+                    <a href="#severability" class="toc-link">Keterpisahan</a>
+                    <a href="#translation" class="toc-link">Interpretasi Terjemahan</a>
+                    <a href="#changes" class="toc-link">Perubahan Ketentuan</a>
+                    <a href="#contact" class="toc-link">Hubungi Kami</a>
+                </nav>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+                <div class="bg-white border-b border-yt-border px-6 py-4">
+                    <div class="flex items-center gap-2 text-sm text-yt-text-secondary">
+                        <a href="../../index.html" class="hover:text-yt-text transition-colors">Beranda</a>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-yt-text-light"></i>
+                        <span class="text-yt-text font-medium">Terms of Service</span>
+                    </div>
+                </div>
+
+                <div class="p-6 max-w-[860px]">
+                    <div class="tos-content">
+
+                        <h1>Terms of Service</h1>
+                        <p class="last-updated">Last updated: July 01, 2026</p>
+
+                        <p class="intro-text">Please read these terms and conditions carefully before using Our Service.</p>
+
+                        <h2 id="definitions">Interpretation and Definitions</h2>
+
+                        <h3>Interpretation</h3>
+                        <p>The words whose initial letters are capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+
+                        <h3>Definitions</h3>
+                        <p>For the purposes of these Terms and Conditions:</p>
+                        <ul>
+                            <li><strong>Affiliate</strong> means an entity that controls, is controlled by, or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</li>
+                            <li><strong>Country</strong> refers to: Indonesia.</li>
+                            <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in these Terms and Conditions) refers to Lyric.o.</li>
+                            <li><strong>Device</strong> means any device that can access the Service such as a computer, a cell phone or a digital tablet.</li>
+                            <li><strong>Service</strong> refers to the Website.</li>
+                            <li><strong>Terms and Conditions</strong> (also referred to as "Terms") means these Terms and Conditions that govern Your access to and use of the Service and form the entire agreement between You and the Company regarding the Service.</li>
+                            <li><strong>Third-Party Social Media Service</strong> means any services or content (including data, information, products or services) provided by a third party that is displayed, included, made available, or linked to through the Service.</li>
+                            <li><strong>Website</strong> refers to Lyric.o, accessible from <a href="https://lyricoid.work.gd/" rel="external nofollow noopener" target="_blank">https://lyricoid.work.gd/</a>.</li>
+                            <li><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
+                        </ul>
+
+                        <h2 id="acknowledgment">Acknowledgment</h2>
+                        <p>These are the Terms and Conditions governing the use of this Service and the agreement between You and the Company. These Terms and Conditions set out the rights and obligations of all users regarding the use of the Service.</p>
+                        <p>Your access to and use of the Service is conditioned on Your acceptance of and compliance with these Terms and Conditions. These Terms and Conditions apply to all visitors, users and others who access or use the Service.</p>
+                        <p>By accessing or using the Service You agree to be bound by these Terms and Conditions. If You disagree with any part of these Terms and Conditions then You may not access the Service.</p>
+
+                        <div class="highlight-box">
+                            <h3>⚠️ Age Requirement</h3>
+                            <p>You represent that you are <strong>at least 13 years of age</strong>. The Company does not permit those under 13 to use the Service. If You are under 18, You acknowledge that Your parent or legal guardian has reviewed and agrees to these Terms on Your behalf.</p>
+                        </div>
+
+                        <p>Your access to and use of the Service is also subject to Our <a href="../Privacy-Policy/index.html">Privacy Policy</a>, which describes how We collect, use, and disclose personal information. Please read Our Privacy Policy carefully before using Our Service.</p>
+
+                        <h2 id="nature-of-service">Nature of the Service</h2>
+                        <p>LyricoID is a <strong>fan-made content aggregator</strong> that provides song lyrics for <strong>informational and educational purposes only</strong>. The Service is provided free of charge and is intended for personal, non-commercial use.</p>
+                        <p>The Service does <strong>not</strong> require user registration, account creation, or any form of payment. Users may browse and read lyrics content without providing any personal information.</p>
+                        <p>The Service integrates with third-party platforms such as <strong>YouTube</strong> and <strong>Spotify</strong> for media playback, and uses <strong>Google Firebase Firestore</strong> as a database to store and retrieve lyrics content. Your use of these third-party services is subject to their respective terms and privacy policies.</p>
+
+                        <h2 id="ip-notice">Intellectual Property & Copyright Notice</h2>
+
+                        <div class="highlight-box">
+                            <h3>Ownership of Lyrics Content</h3>
+                            <p>All song lyrics displayed on this Website are the property of their respective authors, songwriters, music publishers, and copyright holders. <strong>Lyric.o does not claim ownership of any lyrics content.</strong></p>
+                            <p>The lyrics are provided under the principles of fair use for informational and educational purposes. LyricoID does not sell, license, or commercially exploit any lyrics content.</p>
+                        </div>
+
+                        <h3>Accuracy of Lyrics</h3>
+                        <p>Song lyrics on LyricoID are transcribed by fans and may contain errors, inaccuracies, incomplete content, or may not reflect the most current or official version of the lyrics. <strong>We make no guarantee regarding the accuracy, completeness, or reliability of any lyrics.</strong></p>
+                        <p>For official and accurate lyrics, please refer to authorized music platforms, the original copyright holders, or official lyric sources.</p>
+
+                        <h3>DMCA / Takedown Requests</h3>
+                        <p>If you are a copyright holder (songwriter, publisher, or authorized representative) and believe that any lyrics content on LyricoID infringes your copyright, please submit a takedown notice to: <strong>likezelwit@gmail.com</strong></p>
+
+                        <p>Your notice must include:</p>
+                        <ol class="dmca-steps">
+                            <li>Identification of the copyrighted work claimed to have been infringed</li>
+                            <li>Identification of the material that is claimed to be infringing and its URL/location on the website</li>
+                            <li>Your contact information (name, address, telephone number, and email address)</li>
+                            <li>A statement that you have a good faith belief that the use is not authorized by the copyright owner, its agent, or the law</li>
+                            <li>A statement, under penalty of perjury, that the information in the notice is accurate and that you are authorized to act on behalf of the copyright owner</li>
+                            <li>Your physical or electronic signature</li>
+                        </ol>
+
+                        <div class="warning-box">
+                            <p>Upon receipt of a valid notice, we will promptly remove or disable access to the allegedly infringing material.</p>
+                        </div>
+
+                        <h3>Website Design and Branding</h3>
+                        <p>The website design, layout, code, logo, and branding elements of LyricoID are the intellectual property of the Company and are protected by applicable intellectual property laws. You may not copy, modify, or redistribute any part of the website's design or code without prior written consent.</p>
+
+                        <h2 id="user-conduct">User Conduct</h2>
+                        <p>When using the Service, You agree <strong>not</strong> to:</p>
+                        <ul>
+                            <li>Use the Service for any unlawful purpose or in violation of any applicable local, state, national, or international law or regulation</li>
+                            <li>Reproduce, duplicate, copy, sell, resell, or exploit any portion of the lyrics content for commercial purposes without express written permission from the copyright holders</li>
+                            <li>Attempt to circumvent, disable, or interfere with security-related features of the Service</li>
+                            <li>Use automated systems (bots, scrapers, crawlers) to access or extract content from the Service without prior written consent</li>
+                            <li>Introduce any malware, viruses, or other harmful material into the Service</li>
+                            <li>Misrepresent the source or accuracy of lyrics content obtained from the Service</li>
+                            <li>Interfere with or disrupt the integrity or performance of the Service</li>
+                        </ul>
+
+                        <h2 id="links">Links to Other Websites</h2>
+                        <p>Our Service may contain links to third-party websites or services that are not owned or controlled by the Company.</p>
+                        <p>The Company has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third-party websites or services. You further acknowledge and agree that the Company shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with the use of or reliance on any such content, goods or services available on or through any such websites or services.</p>
+                        <p>We strongly advise You to read the terms and conditions and privacy policies of any third-party websites or services that You visit.</p>
+
+                        <h3>Links from a Third-Party Social Media Service</h3>
+                        <p>The Service may display, include, make available, or link to content or services provided by a Third-Party Social Media Service. A Third-Party Social Media Service is not owned or controlled by the Company, and the Company does not endorse or assume responsibility for any Third-Party Social Media Service.</p>
+                        <p>You acknowledge and agree that the Company shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with Your access to or use of any Third-Party Social Media Service, including any content, goods, or services made available through them. Your use of any Third-Party Social Media Service is governed by that Third-Party Social Media Service's terms and privacy policies.</p>
+
+                        <h2 id="termination">Termination</h2>
+                        <p>We may terminate or suspend Your access immediately, without prior notice or liability, for any reason whatsoever, including without limitation if You breach these Terms and Conditions.</p>
+                        <p>Upon termination, Your right to use the Service will cease immediately.</p>
+
+                        <h2 id="limitation">Limitation of Liability</h2>
+                        <p>The Service is provided to You <strong>free of charge</strong>. To the maximum extent permitted by applicable law, in no event shall the Company or its suppliers be liable for any special, incidental, indirect, or consequential damages whatsoever (including, but not limited to, damages for loss of profits, loss of data or other information, for business interruption, for personal injury, loss of privacy arising out of or in any way related to the use of or inability to use the Service, third-party software and/or third-party hardware used with the Service, or otherwise in connection with any provision of these Terms), even if the Company or any supplier has been advised of the possibility of such damages and even if the remedy fails of its essential purpose.</p>
+                        <p>Some states do not allow the exclusion of implied warranties or limitation of liability for incidental or consequential damages, which means that some of the above limitations may not apply. In these states, each party's liability will be limited to the greatest extent permitted by law.</p>
+
+                        <h2 id="disclaimer">"AS IS" and "AS AVAILABLE" Disclaimer</h2>
+                        <p>The Service is provided to You "AS IS" and "AS AVAILABLE" and with all faults and defects without warranty of any kind. To the maximum extent permitted under applicable law, the Company, on its own behalf and on behalf of its Affiliates and its and their respective licensors and service providers, expressly disclaims all warranties, whether express, implied, statutory or otherwise, with respect to the Service, including all implied warranties of merchantability, fitness for a particular purpose, title and non-infringement, and warranties that may arise out of course of dealing, course of performance, usage or trade practice. Without limitation to the foregoing, the Company provides no warranty or undertaking, and makes no representation of any kind that the Service will meet Your requirements, achieve any intended results, be compatible or work with any other software, applications, systems or services, operate without interruption, meet any performance or reliability standards or be error free or that any errors or defects can or will be corrected.</p>
+                        <p>Without limiting the foregoing, neither the Company nor any of the company's provider makes any representation or warranty of any kind, express or implied: (i) as to the operation or availability of the Service, or the information, content, and materials or products included thereon; (ii) that the Service will be uninterrupted or error-free; (iii) as to the accuracy, reliability, or currency of any information or content provided through the Service; or (iv) that the Service, its servers, the content, or e-mails sent from or on behalf of the Company are free of viruses, scripts, trojan horses, worms, malware, timebombs or other harmful components.</p>
+                        <p>Some jurisdictions do not allow the exclusion of certain types of warranties or limitations on applicable statutory rights of a consumer, so some or all of the above exclusions and limitations may not apply to You. But in such a case the exclusions and limitations set forth in this section shall be applied to the greatest extent enforceable under applicable law.</p>
+
+                        <h2 id="indemnification">Indemnification</h2>
+                        <p>You agree to defend, indemnify, and hold harmless the Company and its officers, directors, employees, agents, licensors, and suppliers from and against any claims, actions, demands, liabilities, and settlements including, without limitation, reasonable legal and accounting fees, arising out of or relating to:</p>
+                        <ul>
+                            <li>Your violation of these Terms and Conditions</li>
+                            <li>Your violation of any applicable law or the rights of a third party</li>
+                            <li>Any content You submit, post, or transmit through the Service</li>
+                            <li>Your use or misuse of the Service</li>
+                        </ul>
+
+                        <h2 id="governing-law">Governing Law</h2>
+                        <p>The laws of the Country (Indonesia), excluding its conflicts of law rules, shall govern these Terms and Your use of the Service. Your use of the Application may also be subject to other local, state, national, or international laws.</p>
+
+                        <h2 id="disputes">Disputes Resolution</h2>
+                        <p>If You have any concern or dispute about the Service, You agree to first try to resolve the dispute informally by contacting the Company. We will attempt to resolve the dispute within 30 days of receiving Your notice. If the dispute is not resolved, You may seek resolution through the courts of Indonesia.</p>
+
+                        <h2 id="severability">Severability and Waiver</h2>
+
+                        <h3>Severability</h3>
+                        <p>If any provision of these Terms is held to be unenforceable or invalid, such provision will be changed and interpreted to accomplish the objectives of such provision to the greatest extent possible under applicable law and the remaining provisions will continue in full force and effect.</p>
+
+                        <h3>Waiver</h3>
+                        <p>Except as provided herein, the failure to exercise a right or to require performance of an obligation under these Terms shall not affect a party's ability to exercise such right or require such performance at any time thereafter nor shall the waiver of a breach constitute a waiver of any subsequent breach.</p>
+
+                        <h2 id="translation">Translation Interpretation</h2>
+                        <p>These Terms and Conditions may have been translated if We have made them available to You on our Service. You agree that the original English text shall prevail in the case of a dispute.</p>
+
+                        <h2 id="changes">Changes to These Terms and Conditions</h2>
+                        <p>We reserve the right, at Our sole discretion, to modify or replace these Terms at any time. If a revision is material We will make reasonable efforts to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at Our sole discretion.</p>
+                        <p>By continuing to access or use Our Service after those revisions become effective, You agree to be bound by the revised terms. If You do not agree to the new terms, in whole or in part, please stop using the Service.</p>
+
+                        <h2 id="contact">Contact Us</h2>
+                        <p>If you have any questions about these Terms and Conditions, You can contact us:</p>
+
+                        <div class="contact-box">
+                            <ul>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Email</p>
+                                        <a href="mailto:likezelwit@gmail.com">likezelwit@gmail.com</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Website</p>
+                                        <a href="https://lyricoid.work.gd/Lyric.o/Contact" target="_blank" rel="noopener">lyricoid.work.gd/Lyric.o/Contact</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <p style="color: #0f0f0f; font-size: 13px; font-weight: 500; margin-bottom: 2px;">Company</p>
+                                        <p style="margin-bottom: 0;">Lyric.o<br>Indonesia</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 bg-white border-t border-yt-border py-8 px-6">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-wrap items-center justify-center gap-6 text-sm">
+                    <a href="../../index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Beranda</a>
+                    <a href="../SongLyrics/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Dapatkan Lirik Lagu</a>
+                    <a href="../Privacy-Policy/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Privacy Policy</a>
+                    <a href="index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Terms of Service</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="text-yt-text-secondary hover:text-yt-text transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+                <p class="text-xs text-yt-text-light text-center md:text-right">© 2026 Lyric.o. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        var sidebarOpen = true;
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth < 1312) {
+                sidebarOpen = !sidebarOpen;
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                overlay.classList.toggle('hidden', !sidebarOpen);
+            } else {
+                sidebarOpen = !sidebarOpen;
+                sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+                main.style.marginLeft = sidebarOpen ? '240px' : '0';
+            }
+        }
+        document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+
+        function handleResize() {
+            var sidebar = document.getElementById('sidebar');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth < 1312) {
+                sidebar.style.transform = 'translateX(-100%)';
+                sidebarOpen = false;
+                main.style.marginLeft = '0';
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.style.transform = 'translateX(0)';
+                main.style.marginLeft = '240px';
+                sidebar.style.width = '240px';
+                sidebarOpen = true;
+                overlay.classList.add('hidden');
+            }
+        }
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        var toastTimeout;
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function searchInPage(query) {
+            var q = query.trim().toLowerCase();
+            var content = document.querySelector('.tos-content');
+            if (!content) return;
+            var prevMarks = content.querySelectorAll('mark.search-hl');
+            prevMarks.forEach(function(m) {
+                var parent = m.parentNode;
+                parent.replaceChild(document.createTextNode(m.textContent), m);
+                parent.normalize();
+            });
+            if (!q || q.length < 2) return;
+            var walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            var textNodes = [];
+            while (walker.nextNode()) textNodes.push(walker.currentNode);
+            var firstFound = false;
+            textNodes.forEach(function(node) {
+                if (node.parentElement.closest('.highlight-box, .warning-box, .dmca-steps, .contact-box, h1, h2, h3, h4')) return;
+                var text = node.textContent;
+                var lower = text.toLowerCase();
+                var idx = lower.indexOf(q);
+                if (idx === -1) return;
+                var before = text.substring(0, idx);
+                var match = text.substring(idx, idx + q.length);
+                var after = text.substring(idx + q.length);
+                var mark = document.createElement('mark');
+                mark.className = 'search-hl';
+                mark.style.cssText = 'background: #fde68a; color: #0f0f0f; padding: 0 2px; border-radius: 2px;';
+                mark.textContent = match;
+                var frag = document.createDocumentFragment();
+                if (before) frag.appendChild(document.createTextNode(before));
+                frag.appendChild(mark);
+                if (after) frag.appendChild(document.createTextNode(after));
+                node.parentNode.replaceChild(frag, node);
+                if (!firstFound) {
+                    firstFound = true;
+                    var firstMark = content.querySelector('mark.search-hl');
+                    if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        var tocLinks = document.querySelectorAll('.toc-link');
+        var sections = [];
+        tocLinks.forEach(function(link) {
+            var id = link.getAttribute('href').substring(1);
+            var el = document.getElementById(id);
+            if (el) sections.push({ id: id, el: el, link: link });
+        });
+
+        function updateTOC() {
+            var current = sections[0];
+            var scrollTop = window.scrollY;
+            sections.forEach(function(s) {
+                if (s.el.offsetTop - 100 <= scrollTop) current = s;
+            });
+            tocLinks.forEach(function(l) { l.classList.remove('active'); });
+            if (current) current.link.classList.add('active');
+        }
+        window.addEventListener('scroll', updateTOC, { passive: true });
+        updateTOC();
+
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                var id = this.getAttribute('href').substring(1);
+                var el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var input = document.getElementById('searchInput');
+                if (input.value) { input.value = ''; searchInPage(''); }
+            }
+        });
+    </script>
+</body>
+</html>
