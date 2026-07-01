@@ -51,72 +51,116 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .fade-in { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+        .sidebar-item:hover { background: #f9f7f4; }
+        .sidebar-item.active { background: #f5f2ed; font-weight: 500; }
     </style>
 </head>
 <body class="font-roboto min-h-screen">
 
     <div id="toast" class="toast"></div>
 
-    <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-sm border-b border-lyric-border sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+    <!-- Layout Wrapper -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 bottom-0 w-[240px] bg-lyric-card border-r border-lyric-border overflow-y-auto z-40 pt-4 px-3 transition-transform duration-200 -translate-x-full md:translate-x-0">
+            <div class="flex items-center justify-between px-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-8 h-8 rounded-full">
+                    <span class="font-medium text-lyric-text">Lyric.o</span>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden text-lyric-secondary">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="pb-3 border-b border-lyric-border">
+                <a href="../../index.html" class="sidebar-item">
+                    <span class="w-6 h-6 flex items-center justify-center"><i data-lucide="home" class="w-5 h-5"></i></span>
+                    <span class="text-sm text-lyric-text">Beranda</span>
+                </a>
+                <a href="index.html" class="sidebar-item active">
+                    <span class="w-6 h-6 flex items-center justify-center"><i data-lucide="music" class="w-5 h-5"></i></span>
+                    <span class="text-sm text-lyric-text">Dapatkan Lirik Lagu</span>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-[240px] transition-all">
+            <!-- Header -->
+            <header class="bg-white/80 backdrop-blur-sm border-b border-lyric-border sticky top-0 z-50 h-14 flex items-center px-4 sm:px-6">
+                <button onclick="toggleSidebar()" class="md:hidden mr-2 p-2 rounded-full hover:bg-lyric-hover">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
                 <a href="../../index.html" class="flex items-center gap-2 text-lyric-text no-underline hover:opacity-70 transition-opacity">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     <span class="font-medium text-sm hidden sm:inline">Kembali</span>
                 </a>
-                <div class="w-px h-5 bg-lyric-border hidden sm:block"></div>
+                <div class="w-px h-5 bg-lyric-border hidden sm:block mx-4"></div>
                 <h1 class="text-base font-medium text-lyric-text flex items-center gap-2">
                     <i data-lucide="music-2" class="w-4 h-4 text-lyric-accent"></i>
                     Song Lyrics
                 </h1>
-            </div>
-            <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="flex items-center gap-2 text-lyric-accent-dark hover:text-lyric-accent text-sm font-medium no-underline transition-colors">
-                <i data-lucide="external-link" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">YouTube</span>
-            </a>
-        </div>
-    </header>
+            </header>
 
-    <!-- Search -->
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
-        <div class="flex items-center bg-white rounded-xl border border-lyric-border overflow-hidden focus-within:border-lyric-accent focus-within:shadow-sm transition-all">
-            <div class="pl-4 flex-shrink-0">
-                <i data-lucide="search" class="w-4 h-4 text-lyric-light"></i>
+            <!-- Search -->
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+                <div class="flex items-center bg-white rounded-xl border border-lyric-border overflow-hidden focus-within:border-lyric-accent focus-within:shadow-sm transition-all">
+                    <div class="pl-4 flex-shrink-0">
+                        <i data-lucide="search" class="w-4 h-4 text-lyric-light"></i>
+                    </div>
+                    <input id="searchInput" type="text" placeholder="Cari judul lagu atau artis..." class="flex-1 h-11 px-3 text-sm outline-none bg-transparent text-lyric-text placeholder:text-lyric-light" oninput="filterSongs(this.value)">
+                    <button id="clearSearch" onclick="clearSearchInput()" class="hidden pr-3 text-lyric-light hover:text-lyric-text transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
-            <input id="searchInput" type="text" placeholder="Cari judul lagu atau penulis..." class="flex-1 h-11 px-3 text-sm outline-none bg-transparent text-lyric-text placeholder:text-lyric-light" oninput="filterSongs(this.value)">
-            <button id="clearSearch" onclick="clearSearchInput()" class="hidden pr-3 text-lyric-light hover:text-lyric-text transition-colors">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+
+            <!-- Main -->
+            <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-light text-lyric-text tracking-tight">Koleksi Lirik</h2>
+                    <p class="text-sm text-lyric-secondary mt-1">Klik lagu untuk melihat lirik lengkap</p>
+                </div>
+
+                <!-- Song List -->
+                <div id="songList" class="space-y-3">
+                    <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
+                    <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
+                    <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
+                </div>
+
+                <div id="emptyState" class="hidden text-center py-20">
+                    <i data-lucide="file-text" class="w-16 h-16 text-lyric-light mx-auto mb-4"></i>
+                    <p class="text-lyric-secondary text-lg">Belum ada lirik</p>
+                    <p class="text-lyric-light text-sm mt-1">Lirik akan muncul setelah ditambahkan oleh staff.</p>
+                </div>
+
+                <div id="noResults" class="hidden text-center py-20">
+                    <i data-lucide="search-x" class="w-16 h-16 text-lyric-light mx-auto mb-4"></i>
+                    <p class="text-lyric-secondary text-lg">Tidak ditemukan</p>
+                    <p class="text-lyric-light text-sm mt-1">Coba kata kunci lain.</p>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="mt-10 bg-lyric-card border-t border-lyric-border py-8 px-6">
+                <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex flex-wrap items-center justify-center gap-6 text-sm">
+                        <a href="../Privacy-Policy/index.html" class="text-lyric-secondary hover:text-lyric-text transition-colors">Privacy Policy</a>
+                        <a href="../Team-of-Service/index.html" class="text-lyric-secondary hover:text-lyric-text transition-colors">Team of Service</a>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="text-lyric-secondary hover:text-lyric-text transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                    <p class="text-xs text-lyric-light text-center md:text-right">© 2026 Lyric.o. All Rights Reserved.</p>
+                </div>
+            </footer>
         </div>
     </div>
-
-    <!-- Main -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-        <div class="mb-6">
-            <h2 class="text-2xl font-light text-lyric-text tracking-tight">Koleksi Lirik</h2>
-            <p class="text-sm text-lyric-secondary mt-1">Klik lagu untuk melihat lirik lengkap</p>
-        </div>
-
-        <!-- Song List -->
-        <div id="songList" class="space-y-3">
-            <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
-            <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
-            <div class="bg-white rounded-xl p-4 flex items-center gap-4"><div class="skeleton w-16 h-16 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-2/3 mb-2"></div><div class="skeleton h-3 w-1/3"></div></div></div>
-        </div>
-
-        <div id="emptyState" class="hidden text-center py-20">
-            <i data-lucide="file-text" class="w-16 h-16 text-lyric-light mx-auto mb-4"></i>
-            <p class="text-lyric-secondary text-lg">Belum ada lirik</p>
-            <p class="text-lyric-light text-sm mt-1">Lirik akan muncul setelah ditambahkan oleh staff.</p>
-        </div>
-
-        <div id="noResults" class="hidden text-center py-20">
-            <i data-lucide="search-x" class="w-16 h-16 text-lyric-light mx-auto mb-4"></i>
-            <p class="text-lyric-secondary text-lg">Tidak ditemukan</p>
-            <p class="text-lyric-light text-sm mt-1">Coba kata kunci lain.</p>
-        </div>
-    </main>
 
     <script>
         firebase.initializeApp({
@@ -135,7 +179,13 @@
 
         lucide.createIcons();
 
-        // ★ FIX: Gunakan query parameter
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         function generateSongUrl(song) {
             return '?song=' + (song.id || '');
         }
@@ -172,18 +222,15 @@
             const clearBtn = document.getElementById('clearSearch');
             const noResults = document.getElementById('noResults');
 
-            if (q) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
+            if (q) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
 
             filteredSongs = allSongs.filter(s =>
                 (s.title || '').toLowerCase().includes(q) ||
+                (s.artist || '').toLowerCase().includes(q) ||
                 (s.songWriter || '').toLowerCase().includes(q)
             );
 
-            // Close active panel if filtering
             if (activeIndex >= 0) {
                 closeActivePanel();
                 activeIndex = -1;
@@ -230,7 +277,7 @@
                         <img src="${s.imageUrl || 'https://picsum.photos/seed/lyric'+realIndex+'/128/128'}" alt="${s.title}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/lfallback'+realIndex+'/128/128'">
                         <div class="flex-1 min-w-0">
                             <h3 class="text-sm font-medium text-lyric-text truncate">${s.title || '-'}</h3>
-                            <p class="text-xs text-lyric-secondary mt-0.5">${s.songWriter || 'Unknown Artist'}</p>
+                            <p class="text-xs text-lyric-secondary mt-0.5">${s.artist || s.songWriter || 'Unknown'}</p>
                             <div class="flex items-center gap-3 mt-1">
                                 ${s.duration ? `<span class="text-xs text-lyric-light">${s.duration}</span>` : ''}
                                 ${s.releaseDate ? `<span class="text-xs text-lyric-light">${formatDate(s.releaseDate)}</span>` : ''}
@@ -248,6 +295,10 @@
                                     <div class="flex-1 min-w-0">
                                         <h2 class="text-lg font-medium text-lyric-text mb-3">${s.title || '-'}</h2>
                                         <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                                            <div>
+                                                <span class="text-lyric-light text-xs">Nama Artis</span>
+                                                <p class="text-lyric-text text-sm">${s.artist || '-'}</p>
+                                            </div>
                                             <div>
                                                 <span class="text-lyric-light text-xs">Penulis Lagu</span>
                                                 <p class="text-lyric-text text-sm">${s.songWriter || '-'}</p>
@@ -309,17 +360,14 @@
                 item.classList.remove('active');
                 if (chevron) chevron.style.transform = 'rotate(0deg)';
                 activeIndex = -1;
-                // ★ FIX: Kembali ke URL bersih
                 history.pushState({}, '', window.location.pathname);
                 return;
             }
 
-            // Close previous
             if (activeIndex >= 0) {
                 closeActivePanel();
             }
 
-            // Open new
             const panel = document.getElementById('detail-' + index);
             const item = document.getElementById('item-' + index);
             const chevron = document.getElementById('chevron-' + index);
@@ -328,65 +376,15 @@
             if (chevron) chevron.style.transform = 'rotate(180deg)';
             activeIndex = index;
 
-            // ★ FIX: Pakai query parameter
             const song = allSongs[index];
             const newUrl = generateSongUrl(song);
             history.pushState({ songIndex: index }, '', newUrl);
 
-            // Scroll into view
             setTimeout(() => {
-                if (panel) {
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
+                if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 100);
         }
 
-        // ★ FIX: Handle popstate tanpa double pushState
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.songIndex !== undefined) {
-                // Re-render list dulu agar DOM segar
-                renderSongList(filteredSongs);
-                setTimeout(() => { toggleSong(e.state.songIndex); }, 50);
-            } else {
-                // Tutup panel tanpa pushState
-                if (activeIndex >= 0) {
-                    closeActivePanel();
-                    activeIndex = -1;
-                }
-            }
-        });
-
-        // ★ FIX: Baca dari query parameter, bukan path
-        function initFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const songId = params.get('song');
-            if (songId) {
-                const idx = allSongs.findIndex(s => s.id === songId);
-                if (idx >= 0) {
-                    setTimeout(() => { toggleSong(idx); }, 200);
-                }
-            }
-        }
-
-        // Fetch songs
-        db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
-            allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            filteredSongs = [...allSongs];
-            renderSongList(filteredSongs);
-            initFromUrl();
-        }).catch(err => {
-            console.error(err);
-            document.getElementById('songList').innerHTML = `<div class="text-center py-10"><p class="text-red-400 text-sm">Gagal memuat data.</p></div>`;
-        });
-
-        let toastTimeout;
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-    </script>
-</body>
-</html>
+                renderSongList(filteredSongs
