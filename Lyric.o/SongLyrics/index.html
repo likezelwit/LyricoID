@@ -163,228 +163,321 @@
     </div>
 
     <script>
-        firebase.initializeApp({
-            apiKey: "AIzaSyB5tXCot1h83ZePjiX3kVvYfO0bDs8teSs",
-            authDomain: "dwellidoki-cb4cd.firebaseapp.com",
-            projectId: "dwellidoki-cb4cd",
-            storageBucket: "dwellidoki-cb4cd.firebasestorage.app",
-            messagingSenderId: "677449362018",
-            appId: "1:677449362018:web:834f81d2f55c27b139ff3b",
-            measurementId: "G-MLGPGY8Y1G"
+    // ══════════════════════════════════════
+    // 1. KONFIGURASI & STATE
+    // ══════════════════════════════════════
+    firebase.initializeApp({
+        apiKey: "AIzaSyB5tXCot1h83ZePjiX3kVvYfO0bDs8teSs",
+        authDomain: "dwellidoki-cb4cd.firebaseapp.com",
+        projectId: "dwellidoki-cb4cd",
+        storageBucket: "dwellidoki-cb4cd.firebasestorage.app",
+        messagingSenderId: "677449362018",
+        appId: "1:677449362018:web:834f81d2f55c27b139ff3b",
+        measurementId: "G-MLGPGY8Y1G"
+    });
+    const db = firebase.firestore();
+
+    let allSongs = [];
+    let filteredSongs = [];
+    let activeIndex = -1;
+    let isNavigating = false;
+    let toastTimeout;
+
+    // ══════════════════════════════════════
+    // 2. UTILITAS
+    // ══════════════════════════════════════
+    function formatDate(d) {
+        if (!d) return '-';
+        const date = new Date(d);
+        if (isNaN(date)) return d;
+        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function generateSongUrl(song) {
+        return '?song=' + (song.id || '');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function copyLyrics(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Lirik berhasil disalin!');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('Lirik berhasil disalin!');
         });
-        const db = firebase.firestore();
-        let allSongs = [];
-        let filteredSongs = [];
-        let activeIndex = -1;
+    }
 
-        lucide.createIcons();
+    // ══════════════════════════════════════
+    // 3. UI INTERAKSI
+    // ══════════════════════════════════════
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+    function clearSearchInput() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('clearSearch').classList.add('hidden');
+        filterSongs('');
+    }
+
+    function closeActivePanel() {
+        if (activeIndex < 0) return;
+        const panel = document.getElementById('detail-' + activeIndex);
+        const item = document.getElementById('item-' + activeIndex);
+        const chevron = document.getElementById('chevron-' + activeIndex);
+        if (panel) panel.classList.remove('open');
+        if (item) item.classList.remove('active');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+
+    // ══════════════════════════════════════
+    // 4. RENDER
+    // ══════════════════════════════════════
+    function renderSongList(songs) {
+        const list = document.getElementById('songList');
+        const empty = document.getElementById('emptyState');
+        const noResults = document.getElementById('noResults');
+
+        // Sembunyikan semua state dulu
+        empty.classList.add('hidden');
+        noResults.classList.add('hidden');
+
+        // Tidak ada data sama sekali
+        if (!songs.length && !allSongs.length) {
+            list.innerHTML = '';
+            empty.classList.remove('hidden');
+            lucide.createIcons();
+            return;
         }
 
-        function generateSongUrl(song) {
-            return '?song=' + (song.id || '');
+        // Ada data tapi filter kosong
+        if (!songs.length && allSongs.length) {
+            list.innerHTML = '';
+            noResults.classList.remove('hidden');
+            lucide.createIcons();
+            return;
         }
 
-        function formatDate(d) {
-            if (!d) return '-';
-            const date = new Date(d);
-            if (isNaN(date)) return d;
-            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-        }
-
-        function copyLyrics(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Lirik berhasil disalin!');
-            }).catch(() => {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                showToast('Lirik berhasil disalin!');
-            });
-        }
-
-        function clearSearchInput() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('clearSearch').classList.add('hidden');
-            filterSongs('');
-        }
-
-        function filterSongs(query) {
-            const q = query.toLowerCase().trim();
-            const clearBtn = document.getElementById('clearSearch');
-            const noResults = document.getElementById('noResults');
-
-            if (q) clearBtn.classList.remove('hidden');
-            else clearBtn.classList.add('hidden');
-
-            filteredSongs = allSongs.filter(s =>
-                (s.title || '').toLowerCase().includes(q) ||
-                (s.artist || '').toLowerCase().includes(q) ||
-                (s.songWriter || '').toLowerCase().includes(q)
-            );
-
-            if (activeIndex >= 0) {
-                closeActivePanel();
-                activeIndex = -1;
-            }
-
-            noResults.classList.add('hidden');
-
-            if (!filteredSongs.length && allSongs.length) {
-                noResults.classList.remove('hidden');
-                document.getElementById('songList').innerHTML = '';
-                lucide.createIcons();
-                return;
-            }
-
-            renderSongList(filteredSongs);
-        }
-
-        function closeActivePanel() {
-            const prevPanel = document.getElementById('detail-' + activeIndex);
-            const prevItem = document.getElementById('item-' + activeIndex);
-            const prevChevron = document.getElementById('chevron-' + activeIndex);
-            if (prevPanel) prevPanel.classList.remove('open');
-            if (prevItem) prevItem.classList.remove('active');
-            if (prevChevron) prevChevron.style.transform = 'rotate(0deg)';
-        }
-
-        function renderSongList(songs) {
-            const list = document.getElementById('songList');
-            const empty = document.getElementById('emptyState');
-
-            if (!songs.length && !allSongs.length) {
-                list.innerHTML = '';
-                empty.classList.remove('hidden');
-                lucide.createIcons();
-                return;
-            }
-
-            empty.classList.add('hidden');
-
-            list.innerHTML = songs.map((s, i) => {
-                const realIndex = allSongs.indexOf(s);
-                return `
-                    <div id="item-${realIndex}" class="song-item bg-white rounded-xl p-4 flex items-center gap-4" onclick="toggleSong(${realIndex})">
-                        <img src="${s.imageUrl || 'https://picsum.photos/seed/lyric'+realIndex+'/128/128'}" alt="${s.title}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/lfallback'+realIndex+'/128/128'">
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm font-medium text-lyric-text truncate">${s.title || '-'}</h3>
-                            <p class="text-xs text-lyric-secondary mt-0.5">${s.artist || s.songWriter || 'Unknown'}</p>
-                            <div class="flex items-center gap-3 mt-1">
-                                ${s.duration ? `<span class="text-xs text-lyric-light">${s.duration}</span>` : ''}
-                                ${s.releaseDate ? `<span class="text-xs text-lyric-light">${formatDate(s.releaseDate)}</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0 text-lyric-light">
-                            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" id="chevron-${realIndex}" style="transform:rotate(0deg)"></i>
+        list.innerHTML = songs.map((s) => {
+            const realIndex = allSongs.indexOf(s);
+            return `
+                <div id="item-${realIndex}" class="song-item bg-white rounded-xl p-4 flex items-center gap-4" onclick="toggleSong(${realIndex})">
+                    <img src="${s.imageUrl || 'https://picsum.photos/seed/lyric' + realIndex + '/128/128'}" alt="${s.title}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/lfallback' + realIndex + '/128/128'">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-medium text-lyric-text truncate">${s.title || '-'}</h3>
+                        <p class="text-xs text-lyric-secondary mt-0.5">${s.artist || s.songWriter || 'Unknown'}</p>
+                        <div class="flex items-center gap-3 mt-1">
+                            ${s.duration ? '<span class="text-xs text-lyric-light">' + s.duration + '</span>' : ''}
+                            ${s.releaseDate ? '<span class="text-xs text-lyric-light">' + formatDate(s.releaseDate) + '</span>' : ''}
                         </div>
                     </div>
-                    <div id="detail-${realIndex}" class="detail-panel">
-                        <div class="bg-white rounded-xl border border-lyric-border mx-2 mb-3 overflow-hidden fade-in">
-                            <div class="p-5">
-                                <div class="flex flex-col sm:flex-row gap-5">
-                                    <img src="${s.imageUrl || 'https://picsum.photos/seed/detail'+realIndex+'/200/200'}" alt="${s.title}" class="w-full sm:w-40 h-40 rounded-xl object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/dfallback'+realIndex+'/200/200'">
-                                    <div class="flex-1 min-w-0">
-                                        <h2 class="text-lg font-medium text-lyric-text mb-3">${s.title || '-'}</h2>
-                                        <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Nama Artis</span>
-                                                <p class="text-lyric-text text-sm">${s.artist || '-'}</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Penulis Lagu</span>
-                                                <p class="text-lyric-text text-sm">${s.songWriter || '-'}</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Produsen</span>
-                                                <p class="text-lyric-text text-sm">${s.producer || '-'}</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Durasi</span>
-                                                <p class="text-lyric-text text-sm">${s.duration || '-'}</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Tanggal Rilis</span>
-                                                <p class="text-lyric-text text-sm">${formatDate(s.releaseDate)}</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-lyric-light text-xs">Sumber</span>
-                                                <p class="text-lyric-text text-sm">${s.source || '-'}</p>
-                                            </div>
+                    <div class="flex-shrink-0 text-lyric-light">
+                        <i data-lucide="chevron-down" class="w-5 h-5 transition-transform" id="chevron-${realIndex}" style="transform:rotate(0deg)"></i>
+                    </div>
+                </div>
+                <div id="detail-${realIndex}" class="detail-panel">
+                    <div class="bg-white rounded-xl border border-lyric-border mx-2 mb-3 overflow-hidden fade-in">
+                        <div class="p-5">
+                            <div class="flex flex-col sm:flex-row gap-5">
+                                <img src="${s.imageUrl || 'https://picsum.photos/seed/detail' + realIndex + '/200/200'}" alt="${s.title}" class="w-full sm:w-40 h-40 rounded-xl object-cover flex-shrink-0 bg-lyric-box-bg" onerror="this.src='https://picsum.photos/seed/dfallback' + realIndex + '/200/200'">
+                                <div class="flex-1 min-w-0">
+                                    <h2 class="text-lg font-medium text-lyric-text mb-3">${s.title || '-'}</h2>
+                                    <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Nama Artis</span>
+                                            <p class="text-lyric-text text-sm">${s.artist || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Penulis Lagu</span>
+                                            <p class="text-lyric-text text-sm">${s.songWriter || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Produsen</span>
+                                            <p class="text-lyric-text text-sm">${s.producer || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Durasi</span>
+                                            <p class="text-lyric-text text-sm">${s.duration || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Tanggal Rilis</span>
+                                            <p class="text-lyric-text text-sm">${formatDate(s.releaseDate)}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-lyric-light text-xs">Sumber</span>
+                                            <p class="text-lyric-text text-sm">${s.source || '-'}</p>
                                         </div>
                                     </div>
                                 </div>
-                                ${s.lyrics ? `
-                                <div class="mt-5">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-medium text-lyric-text flex items-center gap-2">
-                                            <i data-lucide="file-text" class="w-4 h-4 text-lyric-accent"></i>
-                                            Lirik
-                                        </h3>
-                                        <button onclick="event.stopPropagation();copyLyrics(allSongs[${realIndex}].lyrics)" class="flex items-center gap-1.5 text-xs text-lyric-accent-dark hover:text-lyric-accent transition-colors bg-lyric-box-bg px-3 py-1.5 rounded-full">
-                                            <i data-lucide="copy" class="w-3 h-3"></i>
-                                            Salin
-                                        </button>
-                                    </div>
-                                    <div class="lyrics-scroll bg-lyric-box-bg rounded-xl p-5 max-h-[400px] overflow-y-auto text-sm text-lyric-text leading-relaxed whitespace-pre-line border border-lyric-border">${s.lyrics}</div>
-                                </div>
-                                ` : `
-                                <div class="mt-5 text-center py-6 text-lyric-light">
-                                    <i data-lucide="file-x" class="w-8 h-8 mx-auto mb-2"></i>
-                                    <p class="text-sm">Lirik belum tersedia</p>
-                                </div>
-                                `}
                             </div>
+                            ${s.lyrics ? `
+                            <div class="mt-5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-medium text-lyric-text flex items-center gap-2">
+                                        <i data-lucide="file-text" class="w-4 h-4 text-lyric-accent"></i>
+                                        Lirik
+                                    </h3>
+                                    <button onclick="event.stopPropagation(); copyLyrics(allSongs[${realIndex}].lyrics)" class="flex items-center gap-1.5 text-xs text-lyric-accent-dark hover:text-lyric-accent transition-colors bg-lyric-box-bg px-3 py-1.5 rounded-full">
+                                        <i data-lucide="copy" class="w-3 h-3"></i>
+                                        Salin
+                                    </button>
+                                </div>
+                                <div class="lyrics-scroll bg-lyric-box-bg rounded-xl p-5 max-h-[400px] overflow-y-auto text-sm text-lyric-text leading-relaxed whitespace-pre-line border border-lyric-border">${s.lyrics}</div>
+                            </div>
+                            ` : `
+                            <div class="mt-5 text-center py-6 text-lyric-light">
+                                <i data-lucide="file-x" class="w-8 h-8 mx-auto mb-2"></i>
+                                <p class="text-sm">Lirik belum tersedia</p>
+                            </div>
+                            `}
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `;
+        }).join('');
 
-            lucide.createIcons();
+        lucide.createIcons();
+    }
+
+    function filterSongs(query) {
+        const q = query.toLowerCase().trim();
+        const clearBtn = document.getElementById('clearSearch');
+
+        if (q) {
+            clearBtn.classList.remove('hidden');
+        } else {
+            clearBtn.classList.add('hidden');
         }
 
-        function toggleSong(index) {
-            if (activeIndex === index) {
-                const panel = document.getElementById('detail-' + index);
-                const item = document.getElementById('item-' + index);
-                const chevron = document.getElementById('chevron-' + index);
-                panel.classList.remove('open');
-                item.classList.remove('active');
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-                activeIndex = -1;
-                history.pushState({}, '', window.location.pathname);
-                return;
-            }
+        filteredSongs = allSongs.filter(s =>
+            (s.title || '').toLowerCase().includes(q) ||
+            (s.artist || '').toLowerCase().includes(q) ||
+            (s.songWriter || '').toLowerCase().includes(q)
+        );
 
+        // Tutup panel yang sedang terbuka
+        if (activeIndex >= 0) {
+            closeActivePanel();
+            activeIndex = -1;
+        }
+
+        renderSongList(filteredSongs);
+    }
+
+    // ══════════════════════════════════════
+    // 5. NAVIGASI & URL
+    // ══════════════════════════════════════
+    function toggleSong(index) {
+        // Jika klik lagu yang sama → tutup
+        if (activeIndex === index) {
+            closeActivePanel();
+            activeIndex = -1;
+            if (!isNavigating) {
+                history.pushState({}, '', window.location.pathname);
+            }
+            return;
+        }
+
+        // Tutup panel sebelumnya
+        if (activeIndex >= 0) {
+            closeActivePanel();
+        }
+
+        // Buka panel yang baru
+        const panel = document.getElementById('detail-' + index);
+        const item = document.getElementById('item-' + index);
+        const chevron = document.getElementById('chevron-' + index);
+        if (panel) panel.classList.add('open');
+        if (item) item.classList.add('active');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        activeIndex = index;
+
+        // Update URL (hanya jika bukan dari navigasi browser)
+        if (!isNavigating) {
+            const song = allSongs[index];
+            history.pushState({ songIndex: index }, '', generateSongUrl(song));
+        }
+
+        // Scroll ke panel
+        setTimeout(() => {
+            if (panel) {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, 100);
+    }
+
+    function initFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const songId = params.get('song');
+        if (songId) {
+            const idx = allSongs.findIndex(s => s.id === songId);
+            if (idx >= 0) {
+                isNavigating = true;
+                toggleSong(idx);
+                isNavigating = false;
+            }
+        }
+    }
+
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.songIndex !== undefined) {
+            isNavigating = true;
+            renderSongList(filteredSongs);
+            setTimeout(() => {
+                toggleSong(e.state.songIndex);
+                isNavigating = false;
+            }, 50);
+        } else {
+            // User navigasi ke state tanpa song → tutup panel
             if (activeIndex >= 0) {
                 closeActivePanel();
+                activeIndex = -1;
             }
-
-            const panel = document.getElementById('detail-' + index);
-            const item = document.getElementById('item-' + index);
-            const chevron = document.getElementById('chevron-' + index);
-            if (panel) panel.classList.add('open');
-            if (item) item.classList.add('active');
-            if (chevron) chevron.style.transform = 'rotate(180deg)';
-            activeIndex = index;
-
-            const song = allSongs[index];
-            const newUrl = generateSongUrl(song);
-            history.pushState({ songIndex: index }, '', newUrl);
-
-            setTimeout(() => {
-                if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
         }
+    });
 
-        window.addEventListener('popstate', function(e) {
-            if (e.state && e.state.songIndex !== undefined) {
-                renderSongList(filteredSongs
+    // ══════════════════════════════════════
+    // 6. INISIALISASI
+    // ══════════════════════════════════════
+    lucide.createIcons();
+
+    Promise.all([
+        db.collection('songs').orderBy('createdAt', 'desc').get(),
+        db.collection('coming_soon').orderBy('createdAt', 'desc').get()
+    ]).then(([publishedSnap, comingSoonSnap]) => {
+        const published = publishedSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const upcoming = comingSoonSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        allSongs = [...published, ...upcoming];
+        filteredSongs = [...allSongs];
+
+        renderSongList(filteredSongs);
+        initFromUrl();
+    }).catch(err => {
+        console.error('Gagal memuat data:', err);
+        document.getElementById('songList').innerHTML = `
+            <div class="text-center py-10">
+                <i data-lucide="alert-circle" class="w-12 h-12 text-red-300 mx-auto mb-3"></i>
+                <p class="text-red-400 text-sm">Gagal memuat data. Coba muat ulang halaman.</p>
+            </div>
+        `;
+        lucide.createIcons();
+    });
+    </script>
+</body>
+</html>
