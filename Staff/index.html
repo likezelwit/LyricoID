@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyric.o - Staff Dashboard</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -54,6 +55,9 @@
         .publish-modal.open { display: flex; }
         .login-screen { position: fixed; inset: 0; background: #f9f9f9; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: #fff; border-radius: 16px; padding: 40px; max-width: 400px; width: 90%; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 0 12px; height: 40px; border-radius: 10px; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+        .sidebar-item:hover { background: #f2f2f2; }
+        .sidebar-item.active { background: #f2f2f2; font-weight: 500; }
     </style>
 </head>
 <body class="font-roboto">
@@ -122,212 +126,268 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-white border-b border-yt-border h-14 flex items-center px-6 sticky top-0 z-50">
-        <a href="../index.html" class="flex items-center gap-2 text-yt-text no-underline hover:opacity-80 transition-opacity">
-            <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            <span class="font-medium text-sm">Kembali ke Channel</span>
-        </a>
-        <div class="flex-1"></div>
-        <div class="flex items-center gap-2">
-            <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-8 h-8 rounded-full object-cover">
-            <span class="text-sm font-medium text-yt-text">Staff Panel</span>
-            <button onclick="handleLogout()" class="ml-3 text-xs text-yt-text-secondary hover:text-red-500 transition-colors flex items-center gap-1" title="Logout">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Logout</span>
-            </button>
-        </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        <!-- Toggle Buttons -->
-        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-            <h1 class="text-2xl font-normal text-yt-text">Kelola Lagu</h1>
-            <div class="flex gap-2">
-                <button id="toggleCSBtn" onclick="toggleCSForm()" class="btn-secondary flex items-center gap-2" style="border:1px solid #e5e5e5;">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                    <span id="toggleCSText">ComingSoon</span>
-                </button>
-                <button id="toggleFormBtn" onclick="toggleForm()" class="btn-primary flex items-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span id="toggleFormText">Tambah Lagu</span>
+    <!-- Layout Wrapper -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 bottom-0 w-[240px] bg-white border-r border-yt-border overflow-y-auto z-40 pt-4 px-3 transition-transform duration-200 -translate-x-full md:translate-x-0">
+            <div class="flex items-center justify-between px-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-8 h-8 rounded-full">
+                    <span class="font-medium text-yt-text">Lyric.o</span>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden text-yt-text-secondary">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-        </div>
+            <div class="pb-3 border-b border-yt-border">
+                <a href="../index.html" class="sidebar-item">
+                    <span class="w-6 h-6 flex items-center justify-center"><i data-lucide="home" class="w-5 h-5"></i></span>
+                    <span class="text-sm text-yt-text">Beranda</span>
+                </a>
+                <a href="../Lyric.o/SongLyrics/index.html" class="sidebar-item">
+                    <span class="w-6 h-6 flex items-center justify-center"><i data-lucide="music" class="w-5 h-5"></i></span>
+                    <span class="text-sm text-yt-text">Dapatkan Lirik Lagu</span>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-        <!-- Coming Soon Form -->
-        <div id="csFormPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0; border-left: 4px solid #f9a825;">
-            <div class="p-6">
-                <h2 class="text-lg font-medium text-yt-text mb-1">Tambah Coming Soon</h2>
-                <p class="text-xs text-yt-text-light mb-5">Lagu akan muncul sebagai "Coming Soon". Link YouTube diminta saat publish.</p>
-                <form id="csForm" onsubmit="handleCSSubmit(event)">
-                    <input type="hidden" id="csEditId" value="">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="form-label">URL Gambar *</label>
-                            <input type="url" id="cs_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="form-label">Nama Musik *</label>
-                            <input type="text" id="cs_title" class="form-input" placeholder="Judul lagu" required>
-                        </div>
-                        <div>
-                            <label class="form-label">Durasi</label>
-                            <input type="text" id="cs_duration" class="form-input" placeholder="3:45">
-                        </div>
-                        <div>
-                            <label class="form-label">Tanggal Rilis</label>
-                            <input type="date" id="cs_releaseDate" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label">Tanggal Entri Pertama</label>
-                            <input type="date" id="cs_firstEntryDate" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label">Posisi Masuk Pertama</label>
-                            <input type="number" id="cs_firstEntryPosition" class="form-input" placeholder="1">
-                        </div>
-                        <div>
-                            <label class="form-label">Produsen</label>
-                            <input type="text" id="cs_producer" class="form-input" placeholder="Nama produsen">
-                        </div>
-                        <div>
-                            <label class="form-label">Penulis Lagu</label>
-                            <input type="text" id="cs_songWriter" class="form-input" placeholder="Nama penulis">
-                        </div>
-                        <div>
-                            <label class="form-label">Sumber</label>
-                            <input type="text" id="cs_source" class="form-input" placeholder="Sumber lirik/data">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="form-label">Lirik</label>
-                            <textarea id="cs_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
-                        </div>
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-[240px] transition-all">
+            <!-- Header -->
+            <header class="bg-white border-b border-yt-border h-14 flex items-center px-6 sticky top-0 z-50">
+                <button onclick="toggleSidebar()" class="md:hidden mr-2 p-2 rounded-full hover:bg-yt-hover">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <a href="../index.html" class="flex items-center gap-2 text-yt-text no-underline hover:opacity-80 transition-opacity">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    <span class="font-medium text-sm hidden sm:inline">Kembali ke Channel</span>
+                </a>
+                <div class="flex-1"></div>
+                <div class="flex items-center gap-2">
+                    <img src="https://i.ibb.co.com/W8JL1vD/Gemini-Generated-Image-zeyj46zeyj46zeyj.png" class="w-8 h-8 rounded-full object-cover">
+                    <span class="text-sm font-medium text-yt-text">Staff Panel</span>
+                    <button onclick="handleLogout()" class="ml-3 text-xs text-yt-text-secondary hover:text-red-500 transition-colors flex items-center gap-1" title="Logout">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+                <!-- Toggle Buttons -->
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <h1 class="text-2xl font-normal text-yt-text">Kelola Lagu</h1>
+                    <div class="flex gap-2">
+                        <button id="toggleCSBtn" onclick="toggleCSForm()" class="btn-secondary flex items-center gap-2" style="border:1px solid #e5e5e5;">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            <span id="toggleCSText">ComingSoon</span>
+                        </button>
+                        <button id="toggleFormBtn" onclick="toggleForm()" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span id="toggleFormText">Tambah Lagu</span>
+                        </button>
                     </div>
-                    <div class="flex gap-3 mt-6">
-                        <button type="submit" class="btn-primary" style="background:#f9a825;color:#000;" onmouseover="this.style.background='#f57f17'" onmouseout="this.style.background='#f9a825'" id="csSubmitBtn">Simpan Coming Soon</button>
-                        <button type="button" onclick="resetCSForm();toggleCSForm()" class="btn-secondary">Batal</button>
+                </div>
+
+                <!-- Coming Soon Form -->
+                <div id="csFormPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0; border-left: 4px solid #f9a825;">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-yt-text mb-1">Tambah Coming Soon</h2>
+                        <p class="text-xs text-yt-text-light mb-5">Lagu akan otomatis terpublish jika Tanggal Rilis telah tiba. Jika dipublish manual, link YouTube wajib diisi.</p>
+                        <form id="csForm" onsubmit="handleCSSubmit(event)">
+                            <input type="hidden" id="csEditId" value="">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">URL Gambar *</label>
+                                    <input type="url" id="cs_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Nama Artis *</label>
+                                    <input type="text" id="cs_artist" class="form-input" placeholder="Nama artis" required>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Nama Musik *</label>
+                                    <input type="text" id="cs_title" class="form-input" placeholder="Judul lagu" required>
+                                </div>
+                                <div>
+                                    <label class="form-label">Durasi</label>
+                                    <input type="text" id="cs_duration" class="form-input" placeholder="3:45">
+                                </div>
+                                <div>
+                                    <label class="form-label">Tanggal Rilis (Auto Publish)</label>
+                                    <input type="date" id="cs_releaseDate" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Tanggal Entri Pertama</label>
+                                    <input type="date" id="cs_firstEntryDate" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Posisi Masuk Pertama</label>
+                                    <input type="number" id="cs_firstEntryPosition" class="form-input" placeholder="1">
+                                </div>
+                                <div>
+                                    <label class="form-label">Produsen</label>
+                                    <input type="text" id="cs_producer" class="form-input" placeholder="Nama produsen">
+                                </div>
+                                <div>
+                                    <label class="form-label">Penulis Lagu</label>
+                                    <input type="text" id="cs_songWriter" class="form-input" placeholder="Nama penulis">
+                                </div>
+                                <div>
+                                    <label class="form-label">Sumber</label>
+                                    <input type="text" id="cs_source" class="form-input" placeholder="Sumber lirik/data">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Lirik</label>
+                                    <textarea id="cs_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mt-6">
+                                <button type="submit" class="btn-primary" style="background:#f9a825;color:#000;" onmouseover="this.style.background='#f57f17'" onmouseout="this.style.background='#f9a825'" id="csSubmitBtn">Simpan Coming Soon</button>
+                                <button type="button" onclick="resetCSForm();toggleCSForm()" class="btn-secondary">Batal</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-        </div>
+                </div>
 
-        <!-- Form Tambah Lagu -->
-        <div id="formPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0;">
-            <div class="p-6">
-                <h2 id="formTitle" class="text-lg font-medium text-yt-text mb-5">Tambah Lagu Baru</h2>
-                <form id="songForm" onsubmit="handleSubmit(event)">
-                    <input type="hidden" id="editId" value="">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="form-label">URL Gambar *</label>
-                            <input type="url" id="f_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
-                            <p class="text-xs text-yt-text-light mt-1">Tempel link gambar (Imgur, DLL)</p>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="form-label">Nama Musik *</label>
-                            <input type="text" id="f_title" class="form-input" placeholder="Judul lagu" required>
-                        </div>
-                        <div>
-                            <label class="form-label">Link YouTube</label>
-                            <input type="url" id="f_youtubeLink" class="form-input" placeholder="https://youtube.com/watch?v=...">
-                        </div>
-                        <div>
-                            <label class="form-label">Durasi</label>
-                            <input type="text" id="f_duration" class="form-input" placeholder="3:45">
-                        </div>
-                        <div>
-                            <label class="form-label">Tanggal Rilis</label>
-                            <input type="date" id="f_releaseDate" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label">Tanggal Entri Pertama</label>
-                            <input type="date" id="f_firstEntryDate" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label">Posisi Masuk Pertama</label>
-                            <input type="number" id="f_firstEntryPosition" class="form-input" placeholder="1">
-                        </div>
-                        <div>
-                            <label class="form-label">Produsen</label>
-                            <input type="text" id="f_producer" class="form-input" placeholder="Nama produsen">
-                        </div>
-                        <div>
-                            <label class="form-label">Penulis Lagu</label>
-                            <input type="text" id="f_songWriter" class="form-input" placeholder="Nama penulis">
-                        </div>
-                        <div>
-                            <label class="form-label">Sumber</label>
-                            <input type="text" id="f_source" class="form-input" placeholder="Sumber lirik/data">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="form-label">Lirik</label>
-                            <textarea id="f_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
-                        </div>
+                <!-- Form Tambah Lagu -->
+                <div id="formPanel" class="bg-white rounded-xl border border-yt-border mb-6 overflow-hidden" style="max-height:0;opacity:0;transition:max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease; margin-bottom:0;">
+                    <div class="p-6">
+                        <h2 id="formTitle" class="text-lg font-medium text-yt-text mb-5">Tambah Lagu Baru</h2>
+                        <form id="songForm" onsubmit="handleSubmit(event)">
+                            <input type="hidden" id="editId" value="">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">URL Gambar *</label>
+                                    <input type="url" id="f_imageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Nama Artis *</label>
+                                    <input type="text" id="f_artist" class="form-input" placeholder="Nama artis" required>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Nama Musik *</label>
+                                    <input type="text" id="f_title" class="form-input" placeholder="Judul lagu" required>
+                                </div>
+                                <div>
+                                    <label class="form-label">Link YouTube</label>
+                                    <input type="url" id="f_youtubeLink" class="form-input" placeholder="https://youtube.com/watch?v=...">
+                                </div>
+                                <div>
+                                    <label class="form-label">Durasi</label>
+                                    <input type="text" id="f_duration" class="form-input" placeholder="3:45">
+                                </div>
+                                <div>
+                                    <label class="form-label">Tanggal Rilis</label>
+                                    <input type="date" id="f_releaseDate" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Tanggal Entri Pertama</label>
+                                    <input type="date" id="f_firstEntryDate" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Posisi Masuk Pertama</label>
+                                    <input type="number" id="f_firstEntryPosition" class="form-input" placeholder="1">
+                                </div>
+                                <div>
+                                    <label class="form-label">Produsen</label>
+                                    <input type="text" id="f_producer" class="form-input" placeholder="Nama produsen">
+                                </div>
+                                <div>
+                                    <label class="form-label">Penulis Lagu</label>
+                                    <input type="text" id="f_songWriter" class="form-input" placeholder="Nama penulis">
+                                </div>
+                                <div>
+                                    <label class="form-label">Sumber</label>
+                                    <input type="text" id="f_source" class="form-input" placeholder="Sumber lirik/data">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="form-label">Lirik</label>
+                                    <textarea id="f_lyrics" class="form-input" rows="8" placeholder="Tulis lirik di sini..." style="resize:vertical;min-height:120px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mt-6">
+                                <button type="submit" class="btn-primary" id="submitBtn">Simpan</button>
+                                <button type="button" onclick="resetForm();toggleForm()" class="btn-secondary">Batal</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="flex gap-3 mt-6">
-                        <button type="submit" class="btn-primary" id="submitBtn">Simpan</button>
-                        <button type="button" onclick="resetForm();toggleForm()" class="btn-secondary">Batal</button>
+                </div>
+
+                <!-- Published Songs Table -->
+                <div class="bg-white rounded-xl border border-yt-border overflow-hidden mb-6">
+                    <div class="px-6 py-3 border-b border-yt-border bg-yt-bg">
+                        <h3 class="text-sm font-medium text-yt-text-secondary flex items-center gap-2">
+                            <i data-lucide="music" class="w-4 h-4"></i>
+                            Lagu Published
+                        </h3>
                     </div>
-                </form>
-            </div>
-        </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-yt-border bg-yt-bg">
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Gambar</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Nama Musik</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Nama Artis</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden md:table-cell">Durasi</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden xl:table-cell">Tanggal Rilis</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden xl:table-cell">Produsen</th>
+                                    <th class="text-right py-3 px-4 font-medium text-yt-text-secondary">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="songTable">
+                                <tr><td colspan="7" class="py-12 text-center text-yt-text-light">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <!-- Published Songs Table -->
-        <div class="bg-white rounded-xl border border-yt-border overflow-hidden mb-6">
-            <div class="px-6 py-3 border-b border-yt-border bg-yt-bg">
-                <h3 class="text-sm font-medium text-yt-text-secondary flex items-center gap-2">
-                    <i data-lucide="music" class="w-4 h-4"></i>
-                    Lagu Published
-                </h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-yt-border bg-yt-bg">
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Gambar</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Nama Musik</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden md:table-cell">Durasi</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Tanggal Rilis</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Produsen</th>
-                            <th class="text-right py-3 px-4 font-medium text-yt-text-secondary">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="songTable">
-                        <tr><td colspan="6" class="py-12 text-center text-yt-text-light">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <!-- Coming Soon Table -->
+                <div class="bg-white rounded-xl border border-yt-border overflow-hidden" style="border-left: 4px solid #f9a825;">
+                    <div class="px-6 py-3 border-b border-yt-border" style="background:#fffde7;">
+                        <h3 class="text-sm font-medium flex items-center gap-2" style="color:#f57f17;">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            Coming Soon
+                        </h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-yt-border" style="background:#fffde7;">
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Gambar</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Nama Musik</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Nama Artis</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden md:table-cell">Durasi</th>
+                                    <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden xl:table-cell">Tanggal Rilis</th>
+                                    <th class="text-right py-3 px-4 font-medium text-yt-text-secondary">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csTable">
+                                <tr><td colspan="6" class="py-12 text-center text-yt-text-light">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
 
-        <!-- Coming Soon Table -->
-        <div class="bg-white rounded-xl border border-yt-border overflow-hidden" style="border-left: 4px solid #f9a825;">
-            <div class="px-6 py-3 border-b border-yt-border" style="background:#fffde7;">
-                <h3 class="text-sm font-medium flex items-center gap-2" style="color:#f57f17;">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                    Coming Soon
-                </h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-yt-border" style="background:#fffde7;">
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Gambar</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary">Nama Musik</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden md:table-cell">Durasi</th>
-                            <th class="text-left py-3 px-4 font-medium text-yt-text-secondary hidden lg:table-cell">Penulis</th>
-                            <th class="text-right py-3 px-4 font-medium text-yt-text-secondary">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="csTable">
-                        <tr><td colspan="5" class="py-12 text-center text-yt-text-light">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Footer -->
+            <footer class="mt-10 bg-white border-t border-yt-border py-8 px-6">
+                <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex flex-wrap items-center justify-center gap-6 text-sm">
+                        <a href="../Lyric.o/Privacy-Policy/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Privacy Policy</a>
+                        <a href="../Lyric.o/Team-of-Service/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Team of Service</a>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="text-yt-text-secondary hover:text-yt-text transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                    <p class="text-xs text-yt-text-light text-center md:text-right">© 2026 Lyric.o. All Rights Reserved.</p>
+                </div>
+            </footer>
         </div>
-
-        <p class="text-xs text-yt-text-light text-center mt-6">Lyric.o Staff Dashboard — Data disimpan di Firebase Firestore</p>
-    </main>
+    </div>
 
     <script>
         firebase.initializeApp({
@@ -346,6 +406,13 @@
         let publishTargetId = null;
 
         lucide.createIcons();
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
 
         // ===== AUTH =====
         auth.onAuthStateChanged(user => {
@@ -381,9 +448,7 @@
                 });
         }
 
-        function handleLogout() {
-            auth.signOut();
-        }
+        function handleLogout() { auth.signOut(); }
 
         // ===== TOGGLE FORMS =====
         let formOpen = false;
@@ -392,7 +457,7 @@
         function toggleForm() {
             const panel = document.getElementById('formPanel');
             const text = document.getElementById('toggleFormText');
-            if (csFormOpen) toggleCSForm(); // close CS form if open
+            if (csFormOpen) toggleCSForm();
             formOpen = !formOpen;
             if (formOpen) {
                 panel.style.maxHeight = '1200px';
@@ -411,7 +476,7 @@
         function toggleCSForm() {
             const panel = document.getElementById('csFormPanel');
             const text = document.getElementById('toggleCSText');
-            if (formOpen) toggleForm(); // close normal form if open
+            if (formOpen) toggleForm();
             csFormOpen = !csFormOpen;
             if (csFormOpen) {
                 panel.style.maxHeight = '1200px';
@@ -438,6 +503,7 @@
         function fillForm(data) {
             document.getElementById('editId').value = data.id;
             document.getElementById('f_imageUrl').value = data.imageUrl || '';
+            document.getElementById('f_artist').value = data.artist || '';
             document.getElementById('f_title').value = data.title || '';
             document.getElementById('f_youtubeLink').value = data.youtubeLink || '';
             document.getElementById('f_duration').value = data.duration || '';
@@ -459,6 +525,7 @@
             const editId = document.getElementById('editId').value;
             const data = {
                 imageUrl: document.getElementById('f_imageUrl').value.trim(),
+                artist: document.getElementById('f_artist').value.trim(),
                 title: document.getElementById('f_title').value.trim(),
                 youtubeLink: document.getElementById('f_youtubeLink').value.trim(),
                 duration: document.getElementById('f_duration').value.trim(),
@@ -497,6 +564,7 @@
         function fillCSForm(data) {
             document.getElementById('csEditId').value = data.id;
             document.getElementById('cs_imageUrl').value = data.imageUrl || '';
+            document.getElementById('cs_artist').value = data.artist || '';
             document.getElementById('cs_title').value = data.title || '';
             document.getElementById('cs_duration').value = data.duration || '';
             document.getElementById('cs_releaseDate').value = data.releaseDate || '';
@@ -516,6 +584,7 @@
             const editId = document.getElementById('csEditId').value;
             const data = {
                 imageUrl: document.getElementById('cs_imageUrl').value.trim(),
+                artist: document.getElementById('cs_artist').value.trim(),
                 title: document.getElementById('cs_title').value.trim(),
                 youtubeLink: '',
                 duration: document.getElementById('cs_duration').value.trim(),
@@ -588,10 +657,8 @@
         function confirmPublish() {
             if (!publishTargetId) return;
             const ytLink = document.getElementById('publishYoutubeLink').value.trim();
-            if (!ytLink) {
-                showToast('Link YouTube wajib diisi');
-                return;
-            }
+            if (!ytLink) { showToast('Link YouTube wajib diisi'); return; }
+            
             db.collection('coming_soon').doc(publishTargetId).get().then(doc => {
                 if (!doc.exists) { showToast('Data tidak ditemukan'); return; }
                 const data = doc.data();
@@ -617,7 +684,7 @@
         db.collection('songs').orderBy('createdAt', 'desc').onSnapshot(snap => {
             const table = document.getElementById('songTable');
             if (snap.empty) {
-                table.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-yt-text-light">Belum ada lagu. Klik "Tambah Lagu" untuk memulai.</td></tr>';
+                table.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-yt-text-light">Belum ada lagu. Klik "Tambah Lagu" untuk memulai.</td></tr>';
                 lucide.createIcons();
                 return;
             }
@@ -630,11 +697,11 @@
                         </td>
                         <td class="py-3 px-4">
                             <p class="font-medium text-yt-text line-clamp-2">${s.title || '-'}</p>
-                            ${s.songWriter ? `<p class="text-xs text-yt-text-light mt-0.5">${s.songWriter}</p>` : ''}
                         </td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.artist || '-'}</td>
                         <td class="py-3 px-4 text-yt-text-secondary hidden md:table-cell">${s.duration || '-'}</td>
-                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${formatDate(s.releaseDate)}</td>
-                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.producer || '-'}</td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden xl:table-cell">${formatDate(s.releaseDate)}</td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden xl:table-cell">${s.producer || '-'}</td>
                         <td class="py-3 px-4 text-right whitespace-nowrap">
                             <button onclick="editSong('${doc.id}')" class="btn-edit mr-1">Edit</button>
                             <button onclick="openDeleteConfirm('${doc.id}','songs')" class="btn-danger">Hapus</button>
@@ -643,15 +710,32 @@
                 `;
             }).join('');
             lucide.createIcons();
-        }, err => {
-            console.error(err);
-            document.getElementById('songTable').innerHTML = `<tr><td colspan="6" class="py-12 text-center text-red-500">Gagal memuat data.</td></tr>`;
         });
 
         db.collection('coming_soon').orderBy('createdAt', 'desc').onSnapshot(snap => {
             const table = document.getElementById('csTable');
+            const today = new Date().toISOString().split('T')[0];
+            let changed = false;
+
+            snap.docs.forEach(doc => {
+                const s = doc.data();
+                if (s.releaseDate && s.releaseDate <= today) {
+                    changed = true;
+                    const data = { ...s };
+                    data.youtubeLink = "Untuk Link Video Youtube Akan Ada Pada 10 hingga 20 Menit";
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    db.collection('songs').add(data).then(() => {
+                        return db.collection('coming_soon').doc(doc.id).delete();
+                    }).then(() => {
+                        showToast(`Lagu "${s.title}" otomatis dipublish!`);
+                    });
+                }
+            });
+
+            if (changed) return;
+
             if (snap.empty) {
-                table.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-yt-text-light">Belum ada Coming Soon.</td></tr>';
+                table.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-yt-text-light">Belum ada Coming Soon.</td></tr>';
                 lucide.createIcons();
                 return;
             }
@@ -665,8 +749,9 @@
                         <td class="py-3 px-4">
                             <p class="font-medium text-yt-text line-clamp-2">${s.title || '-'}</p>
                         </td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.artist || '-'}</td>
                         <td class="py-3 px-4 text-yt-text-secondary hidden md:table-cell">${s.duration || '-'}</td>
-                        <td class="py-3 px-4 text-yt-text-secondary hidden lg:table-cell">${s.songWriter || '-'}</td>
+                        <td class="py-3 px-4 text-yt-text-secondary hidden xl:table-cell">${formatDate(s.releaseDate)}</td>
                         <td class="py-3 px-4 text-right whitespace-nowrap">
                             <button onclick="openPublishModal('${doc.id}')" class="btn-publish mr-1">Publish</button>
                             <button onclick="editCS('${doc.id}')" class="btn-edit mr-1">Edit</button>
@@ -676,9 +761,6 @@
                 `;
             }).join('');
             lucide.createIcons();
-        }, err => {
-            console.error(err);
-            document.getElementById('csTable').innerHTML = `<tr><td colspan="5" class="py-12 text-center text-red-500">Gagal memuat data.</td></tr>`;
         });
 
         let toastTimeout;
