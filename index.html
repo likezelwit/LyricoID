@@ -103,9 +103,9 @@
                 <span class="icon-wrap"><i data-lucide="home" class="w-6 h-6"></i></span>
                 <span class="text-sm">Beranda</span>
             </div>
-            <div class="sidebar-item" onclick="window.open('Lyric.o/SongLyrics/index.html','_self')">
+            <div class="sidebar-item" onclick="window.location.href='Lyric.o/SongLyrics/index.html'">
                 <span class="icon-wrap"><i data-lucide="music" class="w-6 h-6"></i></span>
-                <span class="text-sm">Lirik Lagu</span>
+                <span class="text-sm">Dapatkan Lirik Lagu</span>
             </div>
             <div class="sidebar-item" onclick="scrollToComingSoon()">
                 <span class="icon-wrap"><i data-lucide="clock" class="w-6 h-6"></i></span>
@@ -174,7 +174,7 @@
                 <p class="text-yt-text-light text-sm mt-1">Lagu akan muncul di sini setelah ditambahkan.</p>
             </div>
 
-            <!-- Coming Soon Section — selalu tampil di Beranda -->
+            <!-- Coming Soon Section -->
             <div id="csSection" class="mt-12">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-lg font-normal text-yt-text">UPcoming</h2>
@@ -187,6 +187,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 bg-white border-t border-yt-border py-8 px-6">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-wrap items-center justify-center gap-6 text-sm">
+                    <a href="Lyric.o/Privacy-Policy/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Privacy Policy</a>
+                    <a href="Lyric.o/Team-of-Service/index.html" class="text-yt-text-secondary hover:text-yt-text transition-colors">Team of Service</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="https://www.youtube.com/channel/UCswjQj3xgq83dYAxJvJhWgQ" target="_blank" class="text-yt-text-secondary hover:text-yt-text transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+                <p class="text-xs text-yt-text-light text-center md:text-right">© 2026 Lyric.o. All Rights Reserved.</p>
+            </div>
+        </footer>
     </main>
 
     <script>
@@ -211,7 +227,6 @@
             return m ? m[1] : null;
         }
 
-        // ★ FIX: Gunakan query parameter agar URL bisa di-paste tanpa 404
         function generateSongUrl(song) {
             return '?song=' + (song.id || '');
         }
@@ -244,6 +259,7 @@
                         ${s.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">${s.duration}</span>` : ''}
                     </div>
                     <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
+                    ${s.artist ? `<p class="text-xs text-yt-text-secondary mt-1 line-clamp-1">${s.artist}</p>` : ''}
                 </div>
             `}).join('');
             lucide.createIcons();
@@ -253,17 +269,13 @@
             const section = document.getElementById('csSection');
             const grid = document.getElementById('csGrid');
             const empty = document.getElementById('csEmptyState');
-
-            // ★ FIX: Selalu tampilkan section, tidak pernah di-hide
             section.classList.remove('hidden');
-
             if (!songs.length) {
                 grid.innerHTML = '';
                 empty.classList.remove('hidden');
                 lucide.createIcons();
                 return;
             }
-
             empty.classList.add('hidden');
             grid.innerHTML = songs.map((s, i) => {
                 const realIndex = allComingSoon.indexOf(s);
@@ -280,7 +292,7 @@
                         ${s.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-medium">${s.duration}</span>` : ''}
                     </div>
                     <h3 class="text-sm font-medium text-yt-text leading-5 line-clamp-2">${s.title}</h3>
-                    ${s.songWriter ? `<p class="text-xs text-yt-text-secondary mt-1 line-clamp-1">${s.songWriter}</p>` : ''}
+                    ${s.artist ? `<p class="text-xs text-yt-text-secondary mt-1 line-clamp-1">${s.artist}</p>` : ''}
                 </div>
             `}).join('');
             lucide.createIcons();
@@ -292,8 +304,6 @@
             const vid = getVideoId(s.youtubeLink);
             const lyricUrl = generateLyricUrl(s);
             const songUrl = generateSongUrl(s);
-
-            // ★ FIX: Pakai query parameter, bukan path
             history.pushState({ songIndex: index }, '', songUrl);
 
             const modal = document.getElementById('songModal');
@@ -303,15 +313,14 @@
                     <i data-lucide="x" class="w-6 h-6 text-yt-icon"></i>
                 </button>
                 ${vid ? `<div class="w-full aspect-video bg-black"><iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` :
-                `<div class="w-full aspect-video bg-yt-chip-bg"><img src="${s.imageUrl || ''}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-yt-text-light\\'>Tidak ada gambar</div>'"></div>`}
+                `<div class="w-full aspect-video bg-yt-chip-bg flex items-center justify-center p-6 text-center"><p class="text-sm text-yt-text-secondary">${s.youtubeLink || 'Video belum tersedia'}</p></div>`}
                 <div class="p-6">
                     <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                        <div><span class="text-yt-text-light">Nama Artis</span><p class="text-yt-text mt-0.5">${s.artist || '-'}</p></div>
                         <div><span class="text-yt-text-light">Nama Musik</span><p class="text-yt-text mt-0.5">${s.title || '-'}</p></div>
                         <div><span class="text-yt-text-light">Durasi</span><p class="text-yt-text mt-0.5">${s.duration || '-'}</p></div>
                         <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${s.releaseDate || '-'}</p></div>
-                        <div><span class="text-yt-text-light">Tanggal Entri Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryDate || '-'}</p></div>
-                        <div><span class="text-yt-text-light">Posisi Masuk Pertama</span><p class="text-yt-text mt-0.5">${s.firstEntryPosition || '-'}</p></div>
                         <div><span class="text-yt-text-light">Produsen</span><p class="text-yt-text mt-0.5">${s.producer || '-'}</p></div>
                         <div><span class="text-yt-text-light">Penulis Lagu</span><p class="text-yt-text mt-0.5">${s.songWriter || '-'}</p></div>
                         <div><span class="text-yt-text-light">Sumber</span><p class="text-yt-text mt-0.5">${s.source || '-'}</p></div>
@@ -347,16 +356,13 @@
                 <div class="p-6">
                     <h2 class="text-xl font-normal text-yt-text mb-4">${s.title}</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                        <div><span class="text-yt-text-light">Nama Artis</span><p class="text-yt-text mt-0.5">${s.artist || '-'}</p></div>
                         <div><span class="text-yt-text-light">Nama Musik</span><p class="text-yt-text mt-0.5">${s.title || '-'}</p></div>
                         <div><span class="text-yt-text-light">Durasi</span><p class="text-yt-text mt-0.5">${s.duration || '-'}</p></div>
                         <div><span class="text-yt-text-light">Tanggal Rilis</span><p class="text-yt-text mt-0.5">${s.releaseDate || '-'}</p></div>
                         <div><span class="text-yt-text-light">Produsen</span><p class="text-yt-text mt-0.5">${s.producer || '-'}</p></div>
                         <div><span class="text-yt-text-light">Penulis Lagu</span><p class="text-yt-text mt-0.5">${s.songWriter || '-'}</p></div>
                         <div><span class="text-yt-text-light">Sumber</span><p class="text-yt-text mt-0.5">${s.source || '-'}</p></div>
-                    </div>
-                    <div class="mt-6 text-center py-4 bg-yt-bg rounded-xl">
-                        <i data-lucide="clock" class="w-5 h-5 text-[#f9a825] mx-auto mb-2"></i>
-                        <p class="text-sm text-yt-text-secondary">Lagu ini segera hadir. Nantikan ya!</p>
                     </div>
                 </div>
             `;
@@ -365,7 +371,6 @@
             lucide.createIcons();
         }
 
-        // ★ FIX: Tambah parameter skipPushState agar tidak double push saat popstate
         function closeModal(skipPushState) {
             const modal = document.getElementById('songModal');
             if (!modal.classList.contains('open')) return;
@@ -376,7 +381,6 @@
             }
         }
 
-        // ★ FIX: Gunakan skipPushState saat popstate menutup modal
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.songIndex !== undefined) {
                 openModal(e.state.songIndex);
@@ -388,22 +392,18 @@
         function filterSongs(query) {
             const q = query.toLowerCase().trim();
             if (!q) { renderSongs(allSongs); return; }
-            renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q)));
+            renderSongs(allSongs.filter(s => (s.title || '').toLowerCase().includes(q) || (s.artist || '').toLowerCase().includes(q)));
         }
 
-        // ★ FIX: Baca dari query parameter, bukan dari path
         function initFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const songId = params.get('song');
             if (songId) {
                 const idx = allSongs.findIndex(s => s.id === songId);
-                if (idx >= 0) {
-                    openModal(idx);
-                }
+                if (idx >= 0) openModal(idx);
             }
         }
 
-        // Fetch songs (published)
         db.collection('songs').orderBy('createdAt', 'desc').get().then(snap => {
             allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderSongs(allSongs);
@@ -413,13 +413,11 @@
             document.getElementById('songGrid').innerHTML = `<div class="col-span-full text-center py-10"><p class="text-red-500">Gagal memuat data. Pastikan aturan Firestore mengizinkan pembacaan.</p></div>`;
         });
 
-        // Fetch coming soon songs
         db.collection('coming_soon').orderBy('createdAt', 'desc').get().then(snap => {
             allComingSoon = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderComingSoon(allComingSoon);
         }).catch(err => {
             console.error('Coming soon fetch error:', err);
-            // ★ FIX: Tampilkan pesan error di section jika fetch gagal
             document.getElementById('csEmptyState').innerHTML = `
                 <i data-lucide="alert-circle" class="w-12 h-12 text-red-300 mx-auto mb-3"></i>
                 <p class="text-red-400 text-sm">Gagal memuat data upcoming</p>
@@ -428,15 +426,11 @@
             lucide.createIcons();
         });
 
-        // ★ FIX: Selalu scroll ke section, karena section selalu visible
         function scrollToComingSoon() {
             const section = document.getElementById('csSection');
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Sidebar
         let sidebarOpen = true;
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -462,6 +456,7 @@
                 sidebar.style.transform = 'translateX(-100%)';
                 sidebarOpen = false;
                 main.style.marginLeft = '0';
+                overlay.classList.remove('hidden');
             } else {
                 sidebar.style.transform = 'translateX(0)';
                 main.style.marginLeft = '240px';
